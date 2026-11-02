@@ -4,3 +4,5 @@ https://docs.google.com/document/d/16KWIdD0L0KLZMJauUc8GYrGf3vM_UIoWQlHobRKQ1H0/
 
 ## Homework 5 - Main Modules Drive file link:
 https://docs.google.com/document/d/19RDNcZnWwaI27ksSdP15-Ie_d5avW4mUBEgfftjBVFg/edit?usp=sharing
+## Grayboxing Walkthrough video on Drive:
+https://drive.google.com/file/d/1lJ1_A30Rj6SZNKCCmBrZg7cjF7LyfVkx/view?usp=sharing
