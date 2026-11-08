@@ -249,6 +249,7 @@ GameObject:
   - component: {fileID: 384302853044300708}
   - component: {fileID: 2934402742352481454}
   - component: {fileID: 1309356086108065606}
+  - component: {fileID: 1508270185005763634}
   m_Layer: 0
   m_Name: Paper
   m_TagString: Untagged
@@ -349,3 +350,17 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1508270185005763634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8172122605672535138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bb66c0f719b0b84fbcb0a5ae29e64f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Cuttable
+  cutType: 2
+  minLength: 0.03

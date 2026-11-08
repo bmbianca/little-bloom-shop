@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1574837071158784934}
   - component: {fileID: 7809493001856450323}
   - component: {fileID: 8726318750320170029}
+  - component: {fileID: 7000749858281451786}
   - component: {fileID: 3892710893529607130}
   - component: {fileID: 5761947743252701790}
   - component: {fileID: 6418015611234341170}
@@ -32,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.03, y: 0.004, z: 0.3}
+  m_LocalScale: {x: 0.3, y: 0.004, z: 0.03}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -115,6 +116,20 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7000749858281451786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7109981153137204110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bb66c0f719b0b84fbcb0a5ae29e64f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Cuttable
+  cutType: 3
+  minLength: 0.03
 --- !u!54 &3892710893529607130
 Rigidbody:
   m_ObjectHideFlags: 0

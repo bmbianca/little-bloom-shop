@@ -59,8 +59,10 @@ public static class WrappingSandboxBuilder
         GameObject paperSheet = MakePaperSheetPrefab(gray);
         GameObject ribbonPiece = MakeRibbonPrefab(gray);
 
-        // ---------- buchetul (prefab-ul Andreei) + 4 flori de test ----------
-        GameObject bouquetStation = (GameObject)PrefabUtility.InstantiatePrefab(stationPrefab, shop.transform);
+        // ---------- masa de ambalare: buchetul (prefab-ul Andreei) + statia; devine WrappingTable.prefab ----------
+        GameObject table = new GameObject("WrappingTable");
+        table.transform.SetParent(shop.transform, false);
+        GameObject bouquetStation = (GameObject)PrefabUtility.InstantiatePrefab(stationPrefab, table.transform);
         Bouquet bouquet = bouquetStation.GetComponentInChildren<Bouquet>();
         Transform cone = FindChild(bouquet.transform, "WrapCone");
         Transform bow = FindChild(bouquet.transform, "Ribbon");
@@ -77,7 +79,7 @@ public static class WrappingSandboxBuilder
 
         // ---------- statia de ambalare ----------
         GameObject stationObject = new GameObject("WrappingStation");
-        stationObject.transform.SetParent(shop.transform, false);
+        stationObject.transform.SetParent(table.transform, false);
 
         // locul pentru hartie: zona in care foaia "se prinde" cand ii dai drumul
         GameObject paperSpot = new GameObject("PaperSpot");
@@ -149,9 +151,13 @@ public static class WrappingSandboxBuilder
             if (old != null) Object.DestroyImmediate(old.gameObject);
         }
 
-        BuildWrapWall(shop.transform, paperSheet, ribbonPiece, gray, shades);
+        GameObject wall = BuildWrapWall(shop.transform, paperSheet, ribbonPiece, gray, shades);
         BuildStatsBoard(shop.transform, gray);
         ArrangeTable();
+
+        // prefab-urile pe care le pune Irina in ver2_scene (ca si copii ai Shop)
+        PrefabUtility.SaveAsPrefabAssetAndConnect(wall, PrefabsFolder + "/WrapWall.prefab", InteractionMode.AutomatedAction);
+        PrefabUtility.SaveAsPrefabAssetAndConnect(table, PrefabsFolder + "/WrappingTable.prefab", InteractionMode.AutomatedAction);
 
         AssetDatabase.SaveAssets();
         EditorSceneManager.MarkSceneDirty(shop.scene);
@@ -159,7 +165,7 @@ public static class WrappingSandboxBuilder
     }
 
     // Peretele de ambalare: o placa; sus 5 role de hartie, jos 2 bare cu cate 5 bobine de panglica.
-    static void BuildWrapWall(Transform shop, GameObject sheetPrefab, GameObject ribbonPrefab, Material gray, Material[] shades)
+    static GameObject BuildWrapWall(Transform shop, GameObject sheetPrefab, GameObject ribbonPrefab, Material gray, Material[] shades)
     {
         Bounds room = GameObject.Find("Room").GetComponent<Renderer>().bounds;
         GameObject wall = new GameObject("WrapWall");
@@ -228,6 +234,7 @@ public static class WrappingSandboxBuilder
                 dispenser.colorName = ribbonNames[c];
             }
         }
+        return wall;
     }
 
     // Panoul cu statisticile florariei: deocamdata doar o placa gri langa peretele de ambalare.
@@ -303,7 +310,7 @@ public static class WrappingSandboxBuilder
     // Sterge ce a pus builder-ul data trecuta.
     static void RemoveOldSandbox()
     {
-        string[] oldNames = { "WrappingStation", "PaperRack", "WrapWall", "ScoreBoard", "TestFlower1", "TestFlower2", "TestFlower3", "TestFlower4" };
+        string[] oldNames = { "WrappingTable", "WrappingStation", "PaperRack", "WrapWall", "ScoreBoard", "TestFlower1", "TestFlower2", "TestFlower3", "TestFlower4" };
         for (int i = 0; i < oldNames.Length; i++)
         {
             GameObject old = GameObject.Find(oldNames[i]);
@@ -418,7 +425,9 @@ public static class WrappingSandboxBuilder
     {
         GameObject item = new GameObject("PaperSheet");
         // originea e marginea de sus (cea dinspre rola); foaia coboara de acolo
-        MakeBox("Paper", item.transform, new Vector3(0f, -SheetSize / 2f, 0f), new Vector3(SheetSize, SheetSize, SheetThickness), material, true);
+        GameObject paper = MakeBox("Paper", item.transform, new Vector3(0f, -SheetSize / 2f, 0f), new Vector3(SheetSize, SheetSize, SheetThickness), material, true);
+        // se poate taia cu foarfeca Biancai (Cuttable sta pe obiectul cu collider)
+        paper.AddComponent<Cuttable>().cutType = Cuttable.CutType.WrappingPaper;
 
         // marginea de jos e cea pe care o tii in mana
         GameObject holdPoint = new GameObject("HoldPoint");
@@ -443,7 +452,9 @@ public static class WrappingSandboxBuilder
     // Bucata de panglica luata de pe bobina.
     static GameObject MakeRibbonPrefab(Material material)
     {
-        GameObject item = MakeBox("RibbonPiece", null, Vector3.zero, new Vector3(0.03f, 0.004f, 0.3f), material, true);
+        // lunga pe X, pentru ca foarfeca Biancai scurteaza panglica pe axa X
+        GameObject item = MakeBox("RibbonPiece", null, Vector3.zero, new Vector3(0.3f, 0.004f, 0.03f), material, true);
+        item.AddComponent<Cuttable>().cutType = Cuttable.CutType.Ribbon;
         Rigidbody body = item.AddComponent<Rigidbody>();
         body.mass = 0.05f;
         body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
