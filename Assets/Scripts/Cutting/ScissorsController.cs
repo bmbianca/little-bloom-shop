@@ -1,60 +1,113 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
+#if UNITY_6000_0_OR_NEWER
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
+#endif
 
 public class ScissorsController : MonoBehaviour
 {
-    [Header("Referințe Jumătăți")]
+    [Header("Referinte Jumatati")]
     public Transform halfA;
     public Transform halfB;
 
-    [Header("Setări Rotație")]
-    public Vector3 openRotationA = new Vector3(0, -15f, 0);
-    public Vector3 openRotationB = new Vector3(0, 15f, 0);
+    [Header("Setari Rotatie")]
+    public Vector3 openRotationA = new Vector3(0, -10f, 0);
+    public Vector3 openRotationB = new Vector3(0, 10f, 0);
     public Vector3 closedRotationA = Vector3.zero;
     public Vector3 closedRotationB = Vector3.zero;
 
-    [Header("Detecție Tăiere")]
-    public Collider cutZoneTrigger; // Box Collider-ul cu IsTrigger de pe CutZone
+    [Header("Detectie Taiere")]
+    public Collider cutZoneTrigger;
 
-    private UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable grabInteractable;
+#if UNITY_6000_0_OR_NEWER
+    private XRGrabInteractable grabInteractable;
+#else
+    private UnityEngine.XR.Interaction.Toolkit.XRGrabInteractable grabInteractable;
+#endif
 
     void Awake()
     {
-        grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+#if UNITY_6000_0_OR_NEWER
+        grabInteractable = GetComponent<XRGrabInteractable>();
+#else
+        grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.XRGrabInteractable>();
+#endif
 
-        // Când apeși Trigger-ul pe controller
-        grabInteractable.activated.AddListener(OnScissorsClosed);
-        // Când eliberezi Trigger-ul
-        grabInteractable.deactivated.AddListener(OnScissorsOpened);
-    }
-
-    private void OnScissorsClosed(ActivateEventArgs args)
-    {
-        // 1. Închidem vizual lamele
-        if (halfA != null) halfA.localEulerAngles = closedRotationA;
-        if (halfB != null) halfB.localEulerAngles = closedRotationB;
-
-        // 2. Verificăm ce obiecte Cuttable se află între lame în acest moment
-        Collider[] hits = Physics.OverlapBox(
-            cutZoneTrigger.bounds.center,
-            cutZoneTrigger.bounds.extents,
-            cutZoneTrigger.transform.rotation
-        );
-
-        foreach (Collider hit in hits)
+        if (grabInteractable != null)
         {
-            Cuttable cuttable = hit.GetComponentInParent<Cuttable>();
-            if (cuttable != null)
-            {
-                cuttable.Cut(cutZoneTrigger.transform.position);
-                break; // Tăiem un obiect pe apăsare
-            }
+            grabInteractable.activated.AddListener(OnScissorsClosed);
+            grabInteractable.deactivated.AddListener(OnScissorsOpened);
         }
     }
 
-    private void OnScissorsOpened(DeactivateEventArgs args)
+    public void OnScissorsClosed(ActivateEventArgs args)
     {
-        // Deschidem lamele înapoi
+        if (halfA != null) halfA.localEulerAngles = closedRotationA;
+        if (halfB != null) halfB.localEulerAngles = closedRotationB;
+
+        if (cutZoneTrigger == null) return;
+
+        // Folosim centrul real al BoxCollider-ului din lume!
+        Vector3 exactCutPoint = cutZoneTrigger.bounds.center;
+
+        // Detectam toate colliderele (inclusiv daca vreunul e setat pe Trigger)
+        Collider[] hits = Physics.OverlapBox(
+            exactCutPoint,
+            cutZoneTrigger.bounds.extents,
+            cutZoneTrigger.transform.rotation,
+            ~0,
+            QueryTriggerInteraction.Collide
+        );
+
+        Cuttable leafCandidate = null;
+        Cuttable otherCandidate = null;
+
+        foreach (Collider hit in hits)
+        {
+            if (hit.transform.IsChildOf(transform) || hit.CompareTag("Scrap")) continue;
+
+            // 1. Verificam direct pe obiectul lovit
+            Cuttable c = hit.GetComponent<Cuttable>();
+            if (c != null && !c.CompareTag("Scrap"))
+            {
+                if (c.cutType == Cuttable.CutType.Leaf)
+                {
+                    leafCandidate = c;
+                    break;
+                }
+                else if (otherCandidate == null)
+                {
+                    otherCandidate = c;
+                }
+            }
+
+            // 2. Daca am lovit tija, verificam daca are o frunza copil chiar langa lame!
+            Cuttable[] childCuttables = hit.GetComponentsInChildren<Cuttable>();
+            foreach (Cuttable child in childCuttables)
+            {
+                if (child.cutType == Cuttable.CutType.Leaf && !child.CompareTag("Scrap"))
+                {
+                    if (Vector3.Distance(child.transform.position, exactCutPoint) < 0.06f)
+                    {
+                        leafCandidate = child;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (leafCandidate != null)
+        {
+            leafCandidate.Cut(exactCutPoint);
+        }
+        else if (otherCandidate != null)
+        {
+            otherCandidate.Cut(exactCutPoint);
+        }
+    }
+
+    public void OnScissorsOpened(DeactivateEventArgs args)
+    {
         if (halfA != null) halfA.localEulerAngles = openRotationA;
         if (halfB != null) halfB.localEulerAngles = openRotationB;
     }
