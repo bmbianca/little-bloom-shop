@@ -44,10 +44,28 @@ public class Bouquet : MonoBehaviour
 
         // Se așază în buchet: tija la baza conului, înclinată în evantai
         flower.transform.SetParent(transform, false);
-        flower.transform.localPosition = new Vector3(0, 0.02f, 0);
         flower.transform.localRotation = Quaternion.Euler(fan[flowers.Count % fan.Length]);
+        // o floare taiata are tija mai scurta: o coboram ca tija sa inceapa tot de la baza
+        float stemBottom = StemBottom(flower);
+        flower.transform.localPosition = new Vector3(0, 0.02f, 0) - flower.transform.localRotation * new Vector3(0, stemBottom, 0);
 
         flowers.Add(flower);
         return true;
+    }
+
+    // Cat de sus incepe tija fata de baza florii (0 daca nu a fost taiata).
+    float StemBottom(FlowerItem flower)
+    {
+        Cuttable[] parts = flower.GetComponentsInChildren<Cuttable>();
+        for (int i = 0; i < parts.Length; i++)
+        {
+            if (parts[i].cutType != Cuttable.CutType.Stem) continue;
+            MeshFilter mf = parts[i].GetComponent<MeshFilter>();
+            if (mf == null || mf.sharedMesh == null) continue;
+
+            Vector3 bottom = parts[i].transform.TransformPoint(new Vector3(0, mf.sharedMesh.bounds.min.y, 0));
+            return flower.transform.InverseTransformPoint(bottom).y;
+        }
+        return 0f;
     }
 }
