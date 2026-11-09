@@ -30,11 +30,11 @@ Everything below is in `ver2_scene` and can be played from start to finish.
 2. With keyboard and mouse: choose *Little Bloom > Grab Mode > Toggle*, then press Play.
 3. With a headset: disable *XR Device Simulator*, choose *Little Bloom > Grab Mode > Hold*, then press Play.
    
-══════════════════ 𖥸 ══════════════════ 𖥸  ══════════════════ 𖥸 ══════════════════ 
+══════════ 𖥸 ══════════════════ 𖥸  ══════════════════ 𖥸 ══════
 ## Homework 4 - State of the Art Drive file link:
 https://docs.google.com/document/d/16KWIdD0L0KLZMJauUc8GYrGf3vM_UIoWQlHobRKQ1H0/edit?usp=sharing
 
-══════════════════ 𖥸 ══════════════════ 𖥸 ══════════════════ 𖥸 ══════════════════ 
+═══════════ 𖥸 ══════════════════ 𖥸 ══════════════════ 𖥸 ═══════
 ## Homework 5 - Main Modules Drive file link:
 https://docs.google.com/document/d/19RDNcZnWwaI27ksSdP15-Ie_d5avW4mUBEgfftjBVFg/edit?usp=sharing
 ## Grayboxing Walkthrough video on Drive:
