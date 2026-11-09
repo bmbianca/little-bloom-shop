@@ -112,6 +112,16 @@ public class Cuttable : MonoBehaviour
             }
         }
 
+        // Colliderul florii (pe parinte) se scurteaza si el, ca sa nu ramana sub tija taiata
+        CapsuleCollider capsule = transform.parent != null ? transform.parent.GetComponent<CapsuleCollider>() : null;
+        if (capsule != null && capsule.direction == 1)
+        {
+            float top = capsule.center.y + capsule.height / 2f;
+            float newBottom = transform.parent.InverseTransformPoint(worldCutPoint).y;
+            capsule.height = top - newBottom;
+            capsule.center = new Vector3(capsule.center.x, (top + newBottom) / 2f, capsule.center.z);
+        }
+
         // 2. Cream bucata de jos taiata (intre worldBottom si worldCutPoint)
         GameObject scrap = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         scrap.name = "Stem_Scrap";
