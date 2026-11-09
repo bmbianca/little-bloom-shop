@@ -8,17 +8,17 @@ public class Cuttable : MonoBehaviour
 {
     public enum CutType
     {
-        Stem,           // Tija: se taie exact in punctul foarfecii
-        Leaf,           // Frunza: se desprinde de pe tija si cade
-        WrappingPaper,  // Hartia: se taie in doua bucati
-        Ribbon          // Panglica: se scurteaza si lasa o fasie Scrap
+        Stem,           // Stem: cut exactly where the scissors close
+        Leaf,           // Leaf: falls off the stem
+        WrappingPaper,  // Paper: split in two
+        Ribbon          // Ribbon: gets shorter and drops a Scrap piece
     }
 
-    [Header("Tipul obiectului taiabil")]
+    [Header("Cut type")]
     public CutType cutType = CutType.Stem;
 
-    [Header("Setari pentru Tija (Stem)")]
-    [Tooltip("Lungimea minima in metri care trebuie sa ramana sus")]
+    [Header("Stem settings")]
+    [Tooltip("Minimum length in meters that must stay on top")]
     public float minLength = 0.03f;
 
     private bool isAlreadyScrap = false;
@@ -47,40 +47,40 @@ public class Cuttable : MonoBehaviour
         MeshFilter mf = GetComponent<MeshFilter>();
         if (mf == null || mf.sharedMesh == null) return;
 
-        // Dimensiunea nativa a mesh-ului pe axa Y (2.0 pt cilindru Unity, 1.0 pt cub/ProBuilder)
+        // Mesh height on Y (2 for a Unity cylinder, 1 for a cube)
         Bounds meshBounds = mf.sharedMesh.bounds;
         float meshHeight = meshBounds.size.y;
 
-        // Pozitia locala a foarfecii de-a lungul tijei
+        // Scissors position along the stem, in local space
         Vector3 localCut = transform.InverseTransformPoint(cutWorldPosition);
 
-        // Unde incepe (jos) si unde se termina (sus) mesh-ul in coordonate locale
+        // Bottom and top of the mesh, in local space
         float localBottomY = meshBounds.min.y;
         float localTopY = meshBounds.max.y;
 
-        // Procentul exact unde au atins lamele (0 = jos de tot, 1 = sus de tot)
+        // Where the blades hit (0 = bottom, 1 = top)
         float cutRatio = Mathf.InverseLerp(localBottomY, localTopY, localCut.y);
 
-        // Evitam taieturi in afara tijei
+        // Ignore cuts outside the stem
         if (cutRatio <= 0.02f || cutRatio >= 0.95f) return;
 
         float currentScaleY = transform.localScale.y;
-        float remainingRatio = 1f - cutRatio; // partea de sus care ramane
-        float scrapRatio = cutRatio;          // partea de jos care cade
+        float remainingRatio = 1f - cutRatio; // top part that stays
+        float scrapRatio = cutRatio;          // bottom part that falls
 
         float newScaleY = currentScaleY * remainingRatio;
         float scrapScaleY = currentScaleY * scrapRatio;
 
-        // Verificam lungimea reala in metri a partii care ramane
+        // Real length in meters of the part that stays
         float remainingMeters = newScaleY * meshHeight;
         if (remainingMeters < minLength) return;
 
-        // Calculam capetele tijei in World Space INAINTE de modificare
+        // Stem ends in world space, before the cut
         Vector3 worldTop = transform.TransformPoint(new Vector3(0, localTopY, 0));
         Vector3 worldBottom = transform.TransformPoint(new Vector3(0, localBottomY, 0));
         Vector3 worldCutPoint = Vector3.Lerp(worldBottom, worldTop, cutRatio);
 
-        // Salvam frunzele copii ca sa nu se deformeze cand scalam tija!
+        // Unparent the leaves so they don't stretch when the stem is scaled
         Transform[] children = new Transform[transform.childCount];
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -91,12 +91,12 @@ public class Cuttable : MonoBehaviour
             child.SetParent(transform.parent, true);
         }
 
-        // 1. Redimensionam si pozitionam partea de sus ramasa (intre worldCutPoint si worldTop)
+        // 1. Shrink the top part (from worldCutPoint to worldTop)
         transform.localScale = new Vector3(transform.localScale.x, newScaleY, transform.localScale.z);
-        // capatul de sus ramane pe loc (merge si daca pivotul tijei nu e in mijlocul ei)
+        // keep the top end in place (works for any pivot)
         transform.position += worldTop - transform.TransformPoint(new Vector3(0, localTopY, 0));
 
-        // Atasarea inapoi a frunzelor (sau daca o frunza era pe bucata taiata de jos, cade si ea!)
+        // Reattach the leaves (a leaf below the cut falls off)
         foreach (Transform child in children)
         {
             if (child.position.y < worldCutPoint.y)
@@ -113,7 +113,7 @@ public class Cuttable : MonoBehaviour
             }
         }
 
-        // Colliderul florii (pe parinte) se scurteaza si el, ca sa nu ramana sub tija taiata
+        // Shorten the flower collider (on the parent) to match the cut stem
         CapsuleCollider capsule = transform.parent != null ? transform.parent.GetComponent<CapsuleCollider>() : null;
         if (capsule != null && capsule.direction == 1)
         {
@@ -123,16 +123,16 @@ public class Cuttable : MonoBehaviour
             capsule.center = new Vector3(capsule.center.x, (top + newBottom) / 2f, capsule.center.z);
         }
 
-        // 2. Cream bucata de jos taiata (intre worldBottom si worldCutPoint)
+        // 2. Create the bottom piece (from worldBottom to worldCutPoint)
         GameObject scrap = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         scrap.name = "Stem_Scrap";
         CopyMaterial(scrap);
 
-        // Pentru un cilindru Unity (inaltime = 2), scale.y este jumatate din lungimea in metri
+        // A Unity cylinder is 2 tall, so scale.y is half the length in meters
         float scrapLengthMeters = Vector3.Distance(worldBottom, worldCutPoint);
         scrap.transform.position = (worldBottom + worldCutPoint) * 0.5f;
         scrap.transform.rotation = transform.rotation;
-        // Grosimea reala a tijei: cilindrul Unity are diametrul 1, dar tija poate fi un mesh mai subtire
+        // Real stem thickness (a Unity cylinder is 1 wide, the stem mesh can be thinner)
         float width = meshBounds.size.x * transform.lossyScale.x;
         float depth = meshBounds.size.z * transform.lossyScale.z;
         scrap.transform.localScale = new Vector3(width, scrapLengthMeters * 0.5f, depth);
@@ -159,7 +159,7 @@ public class Cuttable : MonoBehaviour
 
     private void CutFlatObject()
     {
-        // Marimea reala in metri (cubul Unity are latura 1, dar mesh-ul poate fi altul)
+        // Real size in meters (the mesh is not always a 1 m cube)
         Vector3 originalScale = transform.lossyScale;
         MeshFilter mf = GetComponent<MeshFilter>();
         if (mf != null && mf.sharedMesh != null) originalScale = Vector3.Scale(mf.sharedMesh.bounds.size, originalScale);
@@ -173,7 +173,7 @@ public class Cuttable : MonoBehaviour
             ReplaceWithGrabBoxCollider(gameObject, new Vector3(1.2f, 4f, 1.2f));
             SetupScrapPhysicsAndGrab(gameObject);
 
-            // daca bucata era singura parte vizibila (ex. foaia din PaperSheet), parintele gol dispare
+            // if this was the only visible part (e.g. the paper in PaperSheet), remove the empty parent
             if (oldParent != null && oldParent.GetComponentInChildren<Collider>() == null) Destroy(oldParent.gameObject);
             return;
         }

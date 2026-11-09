@@ -6,17 +6,17 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class ScissorsController : MonoBehaviour
 {
-    [Header("Referinte Jumatati")]
+    [Header("Blade halves")]
     public Transform halfA;
     public Transform halfB;
 
-    [Header("Setari Rotatie")]
+    [Header("Rotation")]
     public Vector3 openRotationA = new Vector3(0, -10f, 0);
     public Vector3 openRotationB = new Vector3(0, 10f, 0);
     public Vector3 closedRotationA = Vector3.zero;
     public Vector3 closedRotationB = Vector3.zero;
 
-    [Header("Detectie Taiere")]
+    [Header("Cut detection")]
     public Collider cutZoneTrigger;
 
 #if UNITY_6000_0_OR_NEWER
@@ -47,11 +47,11 @@ public class ScissorsController : MonoBehaviour
 
         if (cutZoneTrigger == null) return;
 
-        // Folosim centrul real al BoxCollider-ului din lume!
+        // Center of the cut zone in world space
         Vector3 exactCutPoint = cutZoneTrigger.bounds.center;
 
-        // Cutia zonei de taiere, rotita odata cu foarfeca.
-        // (bounds.extents e cutia aliniata cu lumea; daca o mai si rotim, iese alta cutie, mai mare)
+        // Real cut zone box, rotated with the scissors
+        // (bounds.extents is world-aligned; rotating it again gives a bigger, wrong box)
         Vector3 halfSize = cutZoneTrigger.bounds.extents;
         BoxCollider box = cutZoneTrigger as BoxCollider;
         if (box != null)
@@ -61,7 +61,7 @@ public class ScissorsController : MonoBehaviour
             halfSize = new Vector3(Mathf.Abs(halfSize.x), Mathf.Abs(halfSize.y), Mathf.Abs(halfSize.z));
         }
 
-        // Detectam toate colliderele (inclusiv daca vreunul e setat pe Trigger)
+        // Find every collider in the zone, triggers included
         Collider[] hits = Physics.OverlapBox(
             exactCutPoint,
             halfSize,
@@ -77,7 +77,7 @@ public class ScissorsController : MonoBehaviour
         {
             if (hit.transform.IsChildOf(transform) || hit.CompareTag("Scrap")) continue;
 
-            // 1. Verificam direct pe obiectul lovit
+            // 1. Check the object that was hit
             Cuttable c = hit.GetComponent<Cuttable>();
             if (c != null && !c.CompareTag("Scrap"))
             {
@@ -92,7 +92,7 @@ public class ScissorsController : MonoBehaviour
                 }
             }
 
-            // 2. Daca am lovit tija, verificam daca are o frunza copil chiar langa lame!
+            // 2. If it is a stem, check for a leaf right next to the blades
             Cuttable[] childCuttables = hit.GetComponentsInChildren<Cuttable>();
             foreach (Cuttable child in childCuttables)
             {

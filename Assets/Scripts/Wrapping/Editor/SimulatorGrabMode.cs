@@ -3,10 +3,10 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-// Pentru testat cu tastatura (XR Device Simulator):
-// "Toggle" = apesi Grip o data ca sa apuci si inca o data ca sa dai drumul,
-// fara sa tii tasta apasata tot drumul.
-// Inainte de testul cu headset-ul, pune inapoi "Hold".
+// For keyboard testing (XR Device Simulator):
+// "Toggle" = press Grip once to grab and once more to let go,
+// without holding the key down.
+// Switch back to "Hold" before testing with the headset.
 public static class SimulatorGrabMode
 {
     [MenuItem("Little Bloom/Grab Mode/Toggle (for keyboard testing)")]
@@ -32,6 +32,6 @@ public static class SimulatorGrabMode
         }
 
         if (hands.Length > 0) EditorSceneManager.MarkSceneDirty(hands[0].gameObject.scene);
-        Debug.Log("Grab mode: " + mode + " (" + hands.Length + " maini). Salveaza scena (Ctrl+S).");
+        Debug.Log("Grab mode: " + mode + " (" + hands.Length + " hands). Save the scene (Ctrl+S).");
     }
 }

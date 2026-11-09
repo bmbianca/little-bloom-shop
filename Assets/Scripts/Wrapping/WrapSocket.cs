@@ -2,10 +2,10 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-// Socket care primeste doar hartie (pe masa) sau doar panglica (la buchet).
+// Socket that takes only paper (on the table) or only ribbon (at the bouquet).
 public class WrapSocket : XRSocketInteractor
 {
-    public bool acceptRibbon;   // false = primeste hartie, true = primeste panglica
+    public bool acceptRibbon;   // false = takes paper, true = takes ribbon
 
     public override bool CanHover(IXRHoverInteractable interactable)
     {

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-// Floarea stă blocată în vază până o apucă cineva prima dată.
+// The flower stays fixed in its vase until it is grabbed for the first time.
 [RequireComponent(typeof(Rigidbody), typeof(XRGrabInteractable))]
 public class FlowerRest : MonoBehaviour
 {

@@ -6,12 +6,12 @@ using UnityEngine;
 using UnityEngine.ProBuilder;
 using UnityEngine.ProBuilder.MeshOperations;
 
-// Meniu: Little Bloom > Build Front Windows (Vitrine)
-// Construiește fațada cu 2 vitrine mari de florărie pe peretele cu ușa:
-// - Taie / șterge fața frontală a cubului Room pentru a deschide vederea spre exterior
-// - Alocă materiale INDEPENDENTE pentru: Ușă (Door.mat), Pereți (ShopWall.mat), Rame (WindowFrame.mat), Sticlă (Glass.mat)
-// - Creează cele 2 geamuri mari dreptunghiulare (ramă, sticlă transparentă, pervaz interior pentru flori)
-// - Creează stâlpii și panourile de perete din jurul ușii și al ferestrelor
+// Menu: Little Bloom > Build Front Windows
+// Builds the front wall with the door and 2 large shop windows:
+// - removes the front face of the Room cube to open the view outside
+// - gives separate materials to the door, walls, frames and glass
+// - creates the 2 windows (frame, clear glass, inner sill for flowers)
+// - creates the pillars and wall panels around the door and windows
 public static class ShopWindowBuilder
 {
     const string WallMaterialPath = "Assets/Materials/Environment/ShopWall.mat";
@@ -19,39 +19,39 @@ public static class ShopWindowBuilder
     const string GlassMaterialPath = "Assets/Materials/Environment/Glass.mat";
     const string FrameMaterialPath = "Assets/Materials/Environment/WindowFrame.mat";
 
-    [MenuItem("Little Bloom/Build Front Windows (Vitrine)")]
+    [MenuItem("Little Bloom/Build Front Windows")]
     public static void Build()
     {
         GameObject shop = GameObject.Find("Shop");
         if (shop == null)
         {
-            EditorUtility.DisplayDialog("Little Bloom", "Nu am găsit obiectul 'Shop' în scena curentă!", "OK");
+            EditorUtility.DisplayDialog("Little Bloom", "Could not find 'Shop' in the current scene.", "OK");
             return;
         }
 
         Undo.IncrementCurrentGroup();
         Undo.SetCurrentGroupName("Build Front Windows");
 
-        // 1. Materiale INDEPENDENTE (ca să nu se mai schimbe toate la un loc)
+        // 1. Separate materials (changing one does not change the others)
         Material wallMat = GetOrCreateWallMaterial();
         Material doorMat = GetOrCreateDoorMaterial();
         Material glassMat = GetOrCreateGlassMaterial();
         Material frameMat = GetOrCreateFrameMaterial();
 
-        // 2. Setăm materialul dedicat pe Ușă (astfel ușa are culoarea ei separată)
+        // 2. Door material
         AssignDoorMaterial(shop, doorMat);
 
-        // 3. Tăierea / Ștergerea feței frontale din cubul Room (ProBuilder) și aplicarea materialului de perete pe Room
+        // 3. Remove the front face of the Room cube and apply the wall material
         CutRoomFrontWallAndAssignMaterial(shop, wallMat);
 
-        // 4. Ștergem fațada veche dacă a mai fost generată anterior
+        // 4. Remove the old facade if it exists
         Transform oldFacade = shop.transform.Find("FrontFacade");
         if (oldFacade != null)
         {
             Undo.DestroyObjectImmediate(oldFacade.gameObject);
         }
 
-        // 5. Construim noua fațadă cu cele 2 vitrine mari
+        // 5. Build the new facade with the 2 windows
         GameObject facade = new GameObject("FrontFacade");
         Undo.RegisterCreatedObjectUndo(facade, "Create FrontFacade");
         facade.transform.SetParent(shop.transform, false);
@@ -60,13 +60,13 @@ public static class ShopWindowBuilder
 
         EditorSceneManager.MarkSceneDirty(shop.scene);
         EditorUtility.DisplayDialog("Little Bloom", 
-            "Vitrinele au fost actualizate cu succes!\n\n" +
-            "Materialele sunt acum COMPLET SEPARATE:\n" +
-            "• Ușa: 'Assets/Materials/Environment/Door.mat'\n" +
-            "• Pereții: 'Assets/Materials/Environment/ShopWall.mat'\n" +
-            "• Ramele: 'Assets/Materials/Environment/WindowFrame.mat'\n" +
-            "• Sticla: 'Assets/Materials/Environment/Glass.mat'\n\n" +
-            "Acum poți schimba culoarea ușii fără să se mai schimbe și pereții!", "Super!");
+            "The windows were updated.\n\n" +
+            "Separate materials:\n" +
+            "- Door: 'Assets/Materials/Environment/Door.mat'\n" +
+            "- Walls: 'Assets/Materials/Environment/ShopWall.mat'\n" +
+            "- Frames: 'Assets/Materials/Environment/WindowFrame.mat'\n" +
+            "- Glass: 'Assets/Materials/Environment/Glass.mat'\n\n" +
+            "You can change the door color without changing the walls.", "OK");
     }
 
     static void AssignDoorMaterial(GameObject shop, Material doorMat)
@@ -88,7 +88,7 @@ public static class ShopWindowBuilder
         Transform roomTransform = shop.transform.Find("Room");
         if (roomTransform == null) return;
 
-        // Punem același material de perete și pe Room, ca pereții să fie uniformi
+        // Same wall material on Room, so all walls match
         Renderer roomRenderer = roomTransform.GetComponent<Renderer>();
         if (roomRenderer != null && wallMat != null)
         {
@@ -99,7 +99,7 @@ public static class ShopWindowBuilder
         ProBuilderMesh pbMesh = roomTransform.GetComponent<ProBuilderMesh>();
         if (pbMesh == null) return;
 
-        // Căutăm fața din față a camerei (orientată spre Z pozitiv în coordonate World)
+        // Find the front face of the room (facing world +Z)
         Face frontFace = null;
         float maxAverageZ = -9999f;
 
@@ -116,7 +116,7 @@ public static class ShopWindowBuilder
             }
             avgZ /= indices.Count;
 
-            // Peretele frontal cu ușa este situat la Z ≈ 3.98
+            // The front wall with the door is at Z = 3.98
             if (avgZ > maxAverageZ)
             {
                 maxAverageZ = avgZ;
@@ -124,7 +124,7 @@ public static class ShopWindowBuilder
             }
         }
 
-        // Dacă peretele frontal există și are Z > 2.5 (semn că e peretele din față și nu a fost deja șters)
+        // Only if it is the front wall (Z > 2.5) and it was not removed already
         if (frontFace != null && maxAverageZ > 2.5f)
         {
             Undo.RecordObject(pbMesh, "Cut Room Front Wall");
@@ -146,37 +146,37 @@ public static class ShopWindowBuilder
         const float wallZ = 3.982f;
         const float wallThickness = 0.10f;
 
-        // Dimensiuni perete:
-        // Podea local Y = -1.4f (World Y = 0.0), Tavan local Y = 1.4f (World Y = 2.8)
-        // Înălțime totală = 2.8m. Lățime totală de la X = -2.0m la X = +2.0m (4m)
-        // Ușa este la X = -0.062, lățime 0.9m (de la X = -0.512 la X = +0.388), înălțime 2.1m (Y = -1.4 la +0.7)
+        // Wall sizes:
+        // Floor at local Y = -1.4 (world 0), ceiling at local Y = 1.4 (world 2.8)
+        // Height 2.8 m, width 4 m (X from -2 to +2)
+        // Door at X = -0.062, 0.9 m wide (X -0.512 to 0.388), 2.1 m tall (Y -1.4 to 0.7)
 
-        // 1. Panou perete plin Stânga (de la X = -2.0 la X = -1.55)
+        // 1. Left wall panel (X -2.0 to -1.55)
         MakeBox("Wall_Left", facadeParent, 
             new Vector3(-1.775f, 0f, wallZ), 
             new Vector3(0.45f, 2.8f, wallThickness), wallMat);
 
-        // 2. Panou perete plin Dreapta (de la X = +1.55 la X = +2.0)
+        // 2. Right wall panel (X 1.55 to 2.0)
         MakeBox("Wall_Right", facadeParent, 
             new Vector3(1.775f, 0f, wallZ), 
             new Vector3(0.45f, 2.8f, wallThickness), wallMat);
 
-        // 3. Grinda de sus (lintel deasupra ferestrelor și ușii, de la Y = +0.7 la Y = +1.4)
+        // 3. Top beam above the windows and door (Y 0.7 to 1.4)
         MakeBox("Wall_Header", facadeParent, 
             new Vector3(0f, 1.05f, wallZ), 
             new Vector3(3.10f, 0.7f, wallThickness), wallMat);
 
-        // 4. Stâlp între Fereastra Stânga și Ușă (de la X = -0.58 la X = -0.512, Y = -1.4 la +0.7)
+        // 4. Pillar between the left window and the door (X -0.58 to -0.512)
         MakeBox("Pillar_LeftDoor", facadeParent, 
             new Vector3(-0.546f, -0.35f, wallZ), 
             new Vector3(0.068f, 2.1f, wallThickness), frameMat ?? wallMat);
 
-        // 5. Stâlp între Ușă și Fereastra Dreapta (de la X = +0.388 la X = +0.46, Y = -1.4 la +0.7)
+        // 5. Pillar between the door and the right window (X 0.388 to 0.46)
         MakeBox("Pillar_RightDoor", facadeParent, 
             new Vector3(0.424f, -0.35f, wallZ), 
             new Vector3(0.072f, 2.1f, wallThickness), frameMat ?? wallMat);
 
-        // 6. Vitrina din Stânga (X: -1.55 la -0.58 => lățime 0.97m)
+        // 6. Left window (X -1.55 to -0.58, 0.97 m wide)
         BuildShopWindow("Window_Left", facadeParent, 
             centerX: -1.065f, 
             width: 0.97f, 
@@ -188,7 +188,7 @@ public static class ShopWindowBuilder
             frameMat: frameMat, 
             glassMat: glassMat);
 
-        // 7. Vitrina din Dreapta (X: +0.46 la +1.55 => lățime 1.09m)
+        // 7. Right window (X 0.46 to 1.55, 1.09 m wide)
         BuildShopWindow("Window_Right", facadeParent, 
             centerX: 1.005f, 
             width: 1.09f, 
@@ -208,23 +208,23 @@ public static class ShopWindowBuilder
         GameObject windowRoot = new GameObject(name);
         windowRoot.transform.SetParent(parent, false);
 
-        // Parapetul de sub geam (de la podea Y = -1.4 până la Y = -1.4 + sillHeight)
+        // Wall under the window (from the floor up to sillHeight)
         float baseCenterY = -1.4f + (sillHeight / 2f);
         MakeBox("Sill_Wall", windowRoot.transform, 
             new Vector3(centerX, baseCenterY, wallZ), 
             new Vector3(width, sillHeight, wallThickness), wallMat);
 
-        // Pervaz interior (raft pentru vaze / flori la vitrină)
+        // Inner sill (shelf for vases and flowers)
         float ledgeY = -1.4f + sillHeight;
         MakeBox("Interior_FlowerLedge", windowRoot.transform, 
             new Vector3(centerX, ledgeY, wallZ - 0.15f), 
             new Vector3(width + 0.05f, 0.04f, 0.35f), frameMat ?? wallMat);
 
-        // Centrul și dimensiunile golului de sticlă
+        // Center and size of the glass opening
         float glassCenterY = ledgeY + (windowHeight / 2f);
         const float frameSize = 0.04f;
 
-        // Rame exterioare geam
+        // Window frame
         MakeBox("Frame_Bottom", windowRoot.transform, 
             new Vector3(centerX, ledgeY + frameSize / 2f, wallZ), 
             new Vector3(width, frameSize, wallThickness + 0.02f), frameMat);
@@ -238,7 +238,7 @@ public static class ShopWindowBuilder
             new Vector3(centerX + (width / 2f) - frameSize / 2f, glassCenterY, wallZ), 
             new Vector3(frameSize, windowHeight, wallThickness + 0.02f), frameMat);
 
-        // Sticla mare transparentă
+        // Large clear glass
         GameObject glass = MakeBox("Glass_Pane", windowRoot.transform, 
             new Vector3(centerX, glassCenterY, wallZ), 
             new Vector3(width - (frameSize * 2f), windowHeight - (frameSize * 2f), 0.015f), glassMat);
@@ -246,7 +246,7 @@ public static class ShopWindowBuilder
         BoxCollider bc = glass.GetComponent<BoxCollider>();
         if (bc == null) glass.AddComponent<BoxCollider>();
 
-        // Baghetă decorativă / bară orizontală la 2/3 din înălțime (stil boutique clasic)
+        // Decorative horizontal bar at about 2/3 height
         float barY = ledgeY + (windowHeight * 0.65f);
         MakeBox("Frame_Mullion", windowRoot.transform, 
             new Vector3(centerX, barY, wallZ), 
@@ -274,7 +274,7 @@ public static class ShopWindowBuilder
         {
             mat = new Material(Shader.Find("Standard"));
             mat.name = "ShopWall";
-            // Culoare gri deschis / crem cald pentru pereți
+            // Light gray for the walls
             mat.color = new Color(0.85f, 0.85f, 0.85f, 1f);
             mat.SetFloat("_Glossiness", 0.1f);
             mat.SetFloat("_Metallic", 0.0f);
@@ -292,7 +292,7 @@ public static class ShopWindowBuilder
         {
             mat = new Material(Shader.Find("Standard"));
             mat.name = "Door";
-            // Culoare distinctă pentru ușă: lemn cald / sage green de florărie
+            // Separate door color (sage green)
             mat.color = new Color(0.40f, 0.48f, 0.42f, 1f);
             mat.SetFloat("_Glossiness", 0.3f);
             mat.SetFloat("_Metallic", 0.05f);

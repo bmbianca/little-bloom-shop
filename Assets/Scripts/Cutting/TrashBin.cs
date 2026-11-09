@@ -2,7 +2,7 @@
 
 public class TrashBin : MonoBehaviour
 {
-    // Când o bucată tăiată (Scrap) cade în coș, o ștergem
+    // A cut piece (Scrap) that falls in the bin is destroyed
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Scrap"))
@@ -11,8 +11,8 @@ public class TrashBin : MonoBehaviour
         }
     }
 
-    // Funcția din Contractul cu Persoana A (Secțiunea 6 din PDF)
-    // Apelată de DayCycle la finalul zilei pentru curățenie în tot magazinul
+    // From the team contract with Person A (section 6)
+    // Called by DayCycle at the end of the day to clean the whole shop
     public void CleanUpScraps()
     {
         GameObject[] remainingScraps = GameObject.FindGameObjectsWithTag("Scrap");

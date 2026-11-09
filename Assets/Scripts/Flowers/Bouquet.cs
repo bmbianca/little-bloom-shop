@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-// Buchetul: lista florilor + starea ambalajului.
-// D setează isWrapped / isTied / wrapColor; florile se adaugă cu AddFlower.
+// The bouquet: its flowers and its wrapping state.
+// The wrapping code sets isWrapped / isTied / wrapColor; flowers are added with AddFlower.
 public class Bouquet : MonoBehaviour
 {
     public List<FlowerItem> flowers = new List<FlowerItem>();
@@ -11,7 +11,7 @@ public class Bouquet : MonoBehaviour
     public bool isTied;
     public string wrapColor = "";
 
-    // Înclinarea fiecărei flori în evantai (grade), în ordinea în care sunt adăugate
+    // Fan tilt of each flower (degrees), in the order they are added
     static readonly Vector3[] fan =
     {
         new Vector3(0, 0, 10),
@@ -24,13 +24,13 @@ public class Bouquet : MonoBehaviour
     public bool AddFlower(FlowerItem flower)
     {
         if (flower == null || flowers.Contains(flower)) return false;
-        if (isWrapped) return false;   // dupa ce hartia e impachetata nu mai intra flori
+        if (isWrapped) return false;   // no new flowers once the paper is wrapped
 
         var grab = flower.GetComponent<XRGrabInteractable>();
         if (grab != null)
         {
-            if (grab.isSelected) return false;   // încă e ținută în mână
-            grab.enabled = false;                // nu se mai poate apuca separat
+            if (grab.isSelected) return false;   // still held in a hand
+            grab.enabled = false;                // can't be grabbed on its own anymore
         }
 
         var rb = flower.GetComponent<Rigidbody>();
@@ -43,10 +43,10 @@ public class Bouquet : MonoBehaviour
         foreach (var c in flower.GetComponentsInChildren<Collider>())
             c.enabled = false;
 
-        // Se așază în buchet: tija la baza conului, înclinată în evantai
+        // Place it in the bouquet: stem at the cone base, tilted like a fan
         flower.transform.SetParent(transform, false);
         flower.transform.localRotation = Quaternion.Euler(fan[flowers.Count % fan.Length]);
-        // o floare taiata are tija mai scurta: o coboram ca tija sa inceapa tot de la baza
+        // a cut flower has a shorter stem: move it down so the stem still starts at the base
         float stemBottom = StemBottom(flower);
         flower.transform.localPosition = new Vector3(0, 0.02f, 0) - flower.transform.localRotation * new Vector3(0, stemBottom, 0);
 
@@ -54,7 +54,7 @@ public class Bouquet : MonoBehaviour
         return true;
     }
 
-    // Cat de sus incepe tija fata de baza florii (0 daca nu a fost taiata).
+    // How high the stem starts above the flower base (0 if it was not cut).
     float StemBottom(FlowerItem flower)
     {
         Cuttable[] parts = flower.GetComponentsInChildren<Cuttable>();

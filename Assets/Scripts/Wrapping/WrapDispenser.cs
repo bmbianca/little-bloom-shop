@@ -4,14 +4,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-// Pe o rola de hartie sau pe o bobina de panglica.
-// Tii apasat pe rola -> tragi o bucata noua (foaie sau panglica) si o ai in mana.
-// Daca doar atingi rola si dai drumul imediat, nu se intampla nimic.
+// On a paper roll or a ribbon spool.
+// Hold grip on it -> a new piece (paper or ribbon) appears in your hand.
+// A quick touch and release does nothing.
 [RequireComponent(typeof(XRSimpleInteractable))]
 public class WrapDispenser : MonoBehaviour
 {
-    public GameObject itemPrefab;     // PaperSheet sau RibbonPiece
-    public Material itemMaterial;     // culoarea bucatii
+    public GameObject itemPrefab;     // PaperSheet or RibbonPiece
+    public Material itemMaterial;     // color of the piece
     public string colorName = "";
 
     XRSimpleInteractable interactable;
@@ -34,20 +34,20 @@ public class WrapDispenser : MonoBehaviour
 
     IEnumerator GiveItem(IXRSelectInteractor hand)
     {
-        // asteptam un frame, ca sa nu schimbam selectia chiar in timpul evenimentului
+        // wait one frame, so we don't change the selection inside the event
         yield return null;
 
         XRInteractionManager manager = interactable.interactionManager;
         if (manager == null || itemPrefab == null) yield break;
 
-        // daca jucatorul a dat deja drumul, nu tragem nicio foaie
+        // if the player already let go, give nothing
         if (!hand.isSelectActive) yield break;
 
-        // Schimbul rola -> bucata noua se face tot in acelasi frame.
-        // Important: dupa SelectExit, mana "uita" ca butonul e tinut (nu mai are selectie),
-        // asa ca NU mai verificam isSelectActive intre SelectExit si SelectEnter.
+        // The swap roll -> new piece happens in the same frame.
+        // After SelectExit the hand has no selection, so isSelectActive is not
+        // checked again between SelectExit and SelectEnter.
 
-        // bucata noua apare in mana
+        // the new piece appears in the hand
         Transform handTransform = hand.transform;
         GameObject item = Instantiate(itemPrefab, handTransform.position, handTransform.rotation);
 
@@ -57,13 +57,13 @@ public class WrapDispenser : MonoBehaviour
         Renderer itemRenderer = item.GetComponentInChildren<Renderer>();
         if (itemRenderer != null && itemMaterial != null) itemRenderer.sharedMaterial = itemMaterial;
 
-        // mana da drumul rolei...
+        // the hand lets go of the roll...
         if (interactable.isSelected)
         {
             manager.SelectExit(hand, interactable);
         }
 
-        // ...si prinde imediat bucata noua
+        // ...and grabs the new piece
         XRGrabInteractable grab = item.GetComponent<XRGrabInteractable>();
         if (grab != null)
         {

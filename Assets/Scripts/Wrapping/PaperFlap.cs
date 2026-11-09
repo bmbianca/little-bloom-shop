@@ -5,26 +5,26 @@ using UnityEngine.XR.Interaction.Toolkit.Inputs.Haptics;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-// O clapa a foii de pe masa (stanga sau dreapta).
-// Obiectul asta sta pe "balamaua" clapei. Apuci clapa si o ridici peste flori:
-// clapa se roteste dupa mana ta. Daca ai dus-o destul de departe, se fixeaza;
-// daca nu, cade inapoi.
-// Clapa se opreste unde se intalneste cu cealalta (forma de triunghi)
-// sau mai devreme, daca ar atinge o floare din buchet.
+// One flap of the paper on the table (left or right).
+// This object sits on the flap hinge. Grab the flap and lift it over the flowers:
+// it rotates with your hand. If it goes far enough it stays folded,
+// otherwise it falls back.
+// It stops where it meets the other flap (a triangle),
+// or earlier if it would touch a flower in the bouquet.
 [RequireComponent(typeof(XRSimpleInteractable))]
 public class PaperFlap : MonoBehaviour
 {
     public WrappingStation station;
-    public Vector3 openDirection = Vector3.back;   // spre marginea libera a clapei, cand e intinsa
-    public GameObject tab;                         // semnul care arata ca poti indoi clapa
+    public Vector3 openDirection = Vector3.back;   // toward the free edge of the flap when it lies flat
+    public GameObject tab;                         // marker that shows the flap can be folded
 
-    public float foldedAngle = 130f;   // unghiul la care se intalneste cu cealalta clapa (triunghi)
-    public float snapAngle = 100f;     // de la cat in sus se fixeaza cand dai drumul
-    public float handTravel = 0.3f;    // cati metri misti mana pentru o indoire intreaga
-    public float width = 0.12f;        // cat de lata e clapa (de la balama la margine)
-    public float length = 0.4f;        // cat de lunga e clapa (de-a lungul balamalei)
+    public float foldedAngle = 130f;   // angle where it meets the other flap (triangle)
+    public float snapAngle = 100f;     // above this angle it stays folded on release
+    public float handTravel = 0.3f;    // hand distance (m) for a full fold
+    public float width = 0.12f;        // flap width, from hinge to edge
+    public float length = 0.4f;        // flap length, along the hinge
 
-    [Header("Stare (doar de citit)")]
+    [Header("State (read only)")]
     public bool canFold;
     public bool isFolded;
 
@@ -33,7 +33,7 @@ public class PaperFlap : MonoBehaviour
     Quaternion openRotation;
     Vector3 axis;
     float angle;
-    float maxAngle;      // unde se opreste clapa de data asta
+    float maxAngle;      // where the flap stops this time
     float angleAtGrab;
     Vector3 handAtGrab;
 
@@ -45,7 +45,7 @@ public class PaperFlap : MonoBehaviour
 
         openRotation = transform.rotation;
         openDirection = openDirection.normalized;
-        // axa balamalei: o rotire pozitiva ridica clapa de pe masa
+        // hinge axis: a positive rotation lifts the flap
         axis = Vector3.Cross(openDirection, Vector3.up).normalized;
     }
 
@@ -64,7 +64,7 @@ public class PaperFlap : MonoBehaviour
 
         if (hand == null) return;
 
-        // mana urca si trece peste flori -> clapa se ridica si se indoaie
+        // hand goes up and over the flowers -> the flap folds
         Vector3 moved = hand.transform.position - handAtGrab;
         float distance = Vector3.Dot(moved, Vector3.up) + Vector3.Dot(moved, -openDirection);
         angle = angleAtGrab + distance / handTravel * foldedAngle;
@@ -83,7 +83,7 @@ public class PaperFlap : MonoBehaviour
         maxAngle = StopAngle();
     }
 
-    // Cat de mult se poate indoi clapa: pana la triunghi, sau pana aproape atinge o floare.
+    // How far the flap can fold: up to the triangle, or until it almost touches a flower.
     float StopAngle()
     {
         float stop = foldedAngle;
@@ -95,8 +95,8 @@ public class PaperFlap : MonoBehaviour
             Renderer[] parts = station.bouquet.flowers[f].GetComponentsInChildren<Renderer>();
             for (int r = 0; r < parts.Length; r++)
             {
-                // 5 puncte de-a lungul bucatii de floare (tija sau capul), de la un capat la altul
-                // (luate din mesh, ca sa mearga pentru orice forma, nu doar pentru cilindrul Unity)
+                // 5 points along each flower part (stem or head), end to end
+                // (taken from the mesh, so any shape works, not only a Unity cylinder)
                 MeshFilter mf = parts[r].GetComponent<MeshFilter>();
                 if (mf == null || mf.sharedMesh == null) continue;
                 Bounds mb = mf.sharedMesh.bounds;
@@ -106,15 +106,15 @@ public class PaperFlap : MonoBehaviour
                     Vector3 local = mb.center + Vector3.up * (mb.extents.y * k / 2f);
                     Vector3 p = part.TransformPoint(local) - hinge;
 
-                    // punctul e in dreptul clapei (de-a lungul balamalei)?
+                    // is the point in front of the flap (along the hinge)?
                     if (Mathf.Abs(Vector3.Dot(p, axis)) > length / 2f) continue;
 
-                    // cat de departe e de balama, privit din capatul clapei
+                    // distance from the hinge, seen from the flap end
                     float side = Vector3.Dot(p, openDirection);
                     float up = p.y;
-                    if (up <= 0f || side * side + up * up > width * width) continue;   // clapa nu ajunge pana acolo
+                    if (up <= 0f || side * side + up * up > width * width) continue;   // the flap can't reach it
 
-                    // unghiul la care clapa ar atinge punctul (minus o mica distanta)
+                    // angle where the flap would touch the point (minus a small gap)
                     float touch = Mathf.Atan2(up, side) * Mathf.Rad2Deg - 5f;
                     if (touch < stop) stop = touch;
                 }
@@ -156,7 +156,7 @@ public class PaperFlap : MonoBehaviour
         if (fold)
         {
             isFolded = true;
-            handle.enabled = false;   // clapa fixata nu se mai apuca
+            handle.enabled = false;   // a folded flap can't be grabbed again
             if (station != null) station.OnFlapFolded();
         }
     }
