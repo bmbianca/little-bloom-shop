@@ -131,7 +131,10 @@ public class Cuttable : MonoBehaviour
         float scrapLengthMeters = Vector3.Distance(worldBottom, worldCutPoint);
         scrap.transform.position = (worldBottom + worldCutPoint) * 0.5f;
         scrap.transform.rotation = transform.rotation;
-        scrap.transform.localScale = new Vector3(transform.lossyScale.x, scrapLengthMeters * 0.5f, transform.lossyScale.z);
+        // Grosimea reala a tijei: cilindrul Unity are diametrul 1, dar tija poate fi un mesh mai subtire
+        float width = meshBounds.size.x * transform.lossyScale.x;
+        float depth = meshBounds.size.z * transform.lossyScale.z;
+        scrap.transform.localScale = new Vector3(width, scrapLengthMeters * 0.5f, depth);
 
         ReplaceWithGrabBoxCollider(scrap, new Vector3(2.5f, 1.5f, 2.5f));
         SetupScrapPhysicsAndGrab(scrap);
