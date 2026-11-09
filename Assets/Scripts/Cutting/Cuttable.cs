@@ -93,7 +93,8 @@ public class Cuttable : MonoBehaviour
 
         // 1. Redimensionam si pozitionam partea de sus ramasa (intre worldCutPoint si worldTop)
         transform.localScale = new Vector3(transform.localScale.x, newScaleY, transform.localScale.z);
-        transform.position = (worldTop + worldCutPoint) * 0.5f;
+        // capatul de sus ramane pe loc (merge si daca pivotul tijei nu e in mijlocul ei)
+        transform.position += worldTop - transform.TransformPoint(new Vector3(0, localTopY, 0));
 
         // Atasarea inapoi a frunzelor (sau daca o frunza era pe bucata taiata de jos, cade si ea!)
         foreach (Transform child in children)
@@ -158,14 +159,22 @@ public class Cuttable : MonoBehaviour
 
     private void CutFlatObject()
     {
+        // Marimea reala in metri (cubul Unity are latura 1, dar mesh-ul poate fi altul)
         Vector3 originalScale = transform.lossyScale;
+        MeshFilter mf = GetComponent<MeshFilter>();
+        if (mf != null && mf.sharedMesh != null) originalScale = Vector3.Scale(mf.sharedMesh.bounds.size, originalScale);
+
         if (originalScale.x < 0.03f)
         {
             isAlreadyScrap = true;
+            Transform oldParent = transform.parent;
             transform.SetParent(null, true);
             gameObject.name += "_Scrap";
             ReplaceWithGrabBoxCollider(gameObject, new Vector3(1.2f, 4f, 1.2f));
             SetupScrapPhysicsAndGrab(gameObject);
+
+            // daca bucata era singura parte vizibila (ex. foaia din PaperSheet), parintele gol dispare
+            if (oldParent != null && oldParent.GetComponentInChildren<Collider>() == null) Destroy(oldParent.gameObject);
             return;
         }
 

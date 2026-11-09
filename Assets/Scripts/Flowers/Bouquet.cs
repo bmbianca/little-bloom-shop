@@ -24,6 +24,7 @@ public class Bouquet : MonoBehaviour
     public bool AddFlower(FlowerItem flower)
     {
         if (flower == null || flowers.Contains(flower)) return false;
+        if (isWrapped) return false;   // dupa ce hartia e impachetata nu mai intra flori
 
         var grab = flower.GetComponent<XRGrabInteractable>();
         if (grab != null)
