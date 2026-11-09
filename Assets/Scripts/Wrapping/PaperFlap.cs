@@ -96,11 +96,15 @@ public class PaperFlap : MonoBehaviour
             for (int r = 0; r < parts.Length; r++)
             {
                 // 5 puncte de-a lungul bucatii de floare (tija sau capul), de la un capat la altul
+                // (luate din mesh, ca sa mearga pentru orice forma, nu doar pentru cilindrul Unity)
+                MeshFilter mf = parts[r].GetComponent<MeshFilter>();
+                if (mf == null || mf.sharedMesh == null) continue;
+                Bounds mb = mf.sharedMesh.bounds;
                 Transform part = parts[r].transform;
-                Vector3 halfAxis = part.up * part.lossyScale.y;   // cilindrul din Unity are inaltimea 2
                 for (int k = -2; k <= 2; k++)
                 {
-                    Vector3 p = parts[r].bounds.center + halfAxis * (k / 2f) - hinge;
+                    Vector3 local = mb.center + Vector3.up * (mb.extents.y * k / 2f);
+                    Vector3 p = part.TransformPoint(local) - hinge;
 
                     // punctul e in dreptul clapei (de-a lungul balamalei)?
                     if (Mathf.Abs(Vector3.Dot(p, axis)) > length / 2f) continue;

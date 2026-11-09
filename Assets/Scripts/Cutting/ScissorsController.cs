@@ -50,10 +50,21 @@ public class ScissorsController : MonoBehaviour
         // Folosim centrul real al BoxCollider-ului din lume!
         Vector3 exactCutPoint = cutZoneTrigger.bounds.center;
 
+        // Cutia zonei de taiere, rotita odata cu foarfeca.
+        // (bounds.extents e cutia aliniata cu lumea; daca o mai si rotim, iese alta cutie, mai mare)
+        Vector3 halfSize = cutZoneTrigger.bounds.extents;
+        BoxCollider box = cutZoneTrigger as BoxCollider;
+        if (box != null)
+        {
+            exactCutPoint = box.transform.TransformPoint(box.center);
+            halfSize = Vector3.Scale(box.size, box.transform.lossyScale) * 0.5f;
+            halfSize = new Vector3(Mathf.Abs(halfSize.x), Mathf.Abs(halfSize.y), Mathf.Abs(halfSize.z));
+        }
+
         // Detectam toate colliderele (inclusiv daca vreunul e setat pe Trigger)
         Collider[] hits = Physics.OverlapBox(
             exactCutPoint,
-            cutZoneTrigger.bounds.extents,
+            halfSize,
             cutZoneTrigger.transform.rotation,
             ~0,
             QueryTriggerInteraction.Collide
