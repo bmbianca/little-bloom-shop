@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Obiectul apare crescand de la 0 la marimea lui normala.
+// The object grows from 0 to its normal size.
 public class GrowIn : MonoBehaviour
 {
     public float duration = 0.3f;
@@ -35,7 +35,7 @@ public class GrowIn : MonoBehaviour
         {
             time += Time.deltaTime;
             float k = time / duration;
-            k = 1f - (1f - k) * (1f - k);   // porneste repede si incetineste la final
+            k = 1f - (1f - k) * (1f - k);   // fast at first, slower at the end
             transform.localScale = fullScale * k;
             yield return null;
         }

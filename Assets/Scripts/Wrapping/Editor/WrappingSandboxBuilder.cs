@@ -3,10 +3,10 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-// Meniu: Little Bloom > Build Wrapping Sandbox
-// Pune in scena sandbox_wrapping tot ce trebuie pentru ambalare (graybox, totul gri):
-// peretele cu role de hartie si panglici, panoul de statistici, statia de pe masa.
-// Daca e rulat din nou, sterge ce a facut data trecuta si reface totul.
+// Menu: Little Bloom > Build Wrapping Sandbox
+// Builds everything for wrapping in sandbox_wrapping (graybox, all gray):
+// the wall with paper rolls and ribbons, the stats board, the table station.
+// Running it again removes the old objects and rebuilds everything.
 public static class WrappingSandboxBuilder
 {
     const string PrefabsFolder = "Assets/Prefabs/Wrapping";
@@ -15,10 +15,10 @@ public static class WrappingSandboxBuilder
     const string StationPrefabPath = "Assets/Prefabs/Flowers/BouquetStation.prefab";
     const string FlowerPrefabPath = "Assets/Prefabs/Flowers/Flower.prefab";
 
-    const float SheetSize = 0.4f;          // foaia: 40 x 40 cm, la fel in mana, pe rola si pe masa
+    const float SheetSize = 0.4f;          // sheet: 40 x 40 cm, same in hand, on the roll and on the table
     const float SheetThickness = 0.003f;
 
-    // numele culorilor (pentru comanda); in graybox fiecare are alta nuanta de gri
+    // color names (for orders); in graybox each one is a different gray
     static string[] paperNames = { "Pink", "Kraft", "White", "Lilac", "Mint" };
     static string[] ribbonNames = { "Red", "Pink", "Gold", "White", "Green", "Lilac", "Blue", "Peach", "Silver", "Burgundy" };
 
@@ -28,13 +28,13 @@ public static class WrappingSandboxBuilder
         if (GameObject.Find("WrappingStation") != null)
         {
             bool rebuild = EditorUtility.DisplayDialog("Little Bloom",
-                "Scena are deja statia de ambalare. O construiesc din nou?", "Da", "Nu");
+                "The scene already has the wrapping station. Build it again?", "Yes", "No");
             if (!rebuild) return;
         }
         Rebuild();
     }
 
-    // La fel ca meniul, dar fara intrebare.
+    // Same as the menu, without the dialog.
     public static void Rebuild()
     {
         GameObject shop = GameObject.Find("Shop");
@@ -44,12 +44,12 @@ public static class WrappingSandboxBuilder
         GameObject flowerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(FlowerPrefabPath);
         if (shop == null || gray == null || outline == null || stationPrefab == null || flowerPrefab == null)
         {
-            Debug.LogError("Lipseste ceva: Shop, Graybox_Wrapping.mat, HintOutline.mat, BouquetStation sau Flower.");
+            Debug.LogError("Missing: Shop, Graybox_Wrapping.mat, HintOutline.mat, BouquetStation or Flower.");
             return;
         }
         RemoveOldSandbox();
 
-        // 10 nuante de gri, de la deschis la inchis: panglicile le folosesc pe toate, hartiile din 2 in 2
+        // 10 grays, light to dark: ribbons use all of them, papers every second one
         Material[] shades = new Material[10];
         for (int i = 0; i < shades.Length; i++)
         {
@@ -59,7 +59,7 @@ public static class WrappingSandboxBuilder
         GameObject paperSheet = MakePaperSheetPrefab(gray);
         GameObject ribbonPiece = MakeRibbonPrefab(gray);
 
-        // ---------- masa de ambalare: buchetul (prefab-ul Andreei) + statia; devine WrappingTable.prefab ----------
+        // ---------- wrapping table: bouquet (Andreea's prefab) + station; saved as WrappingTable.prefab ----------
         GameObject table = new GameObject("WrappingTable");
         table.transform.SetParent(shop.transform, false);
         GameObject bouquetStation = (GameObject)PrefabUtility.InstantiatePrefab(stationPrefab, table.transform);
@@ -77,11 +77,11 @@ public static class WrappingSandboxBuilder
             flower.name = "TestFlower" + (i + 1);
         }
 
-        // ---------- statia de ambalare ----------
+        // ---------- wrapping station ----------
         GameObject stationObject = new GameObject("WrappingStation");
         stationObject.transform.SetParent(table.transform, false);
 
-        // locul pentru hartie: zona in care foaia "se prinde" cand ii dai drumul
+        // paper spot: the area that catches the sheet when you let go
         GameObject paperSpot = new GameObject("PaperSpot");
         paperSpot.transform.SetParent(stationObject.transform, false);
         BoxCollider spotTrigger = paperSpot.AddComponent<BoxCollider>();
@@ -94,16 +94,16 @@ public static class WrappingSandboxBuilder
         paperAttach.transform.SetParent(paperSpot.transform, false);
         paperSocket.attachTransform = paperAttach.transform;
 
-        // foaia intinsa pe masa: mijloc + 2 clape (stanga, dreapta)
+        // laid paper: middle + 2 flaps (left, right)
         GameObject laidPaper = new GameObject("LaidPaper");
         laidPaper.transform.SetParent(stationObject.transform, false);
-        float inner = 0.08f;                     // jumatate din latimea mijlocului
+        float inner = 0.08f;                     // half the middle width
         float flapSize = SheetSize / 2f - inner; // 12 cm
         GameObject middle = MakeBox("Middle", laidPaper.transform, Vector3.zero, new Vector3(inner * 2f, SheetThickness, SheetSize), gray, false);
         PaperFlap leftFlap = MakeFlap("FlapLeft", laidPaper.transform, -inner, Vector3.left, flapSize, gray, outline);
         PaperFlap rightFlap = MakeFlap("FlapRight", laidPaper.transform, inner, Vector3.right, flapSize, gray, outline);
 
-        // locul pentru panglica, la baza buchetului
+        // ribbon spot at the bouquet base
         GameObject ribbonSpot = new GameObject("RibbonSpot");
         ribbonSpot.transform.SetParent(stationObject.transform, false);
         SphereCollider ribbonTrigger = ribbonSpot.AddComponent<SphereCollider>();
@@ -112,10 +112,10 @@ public static class WrappingSandboxBuilder
         WrapSocket ribbonSocket = ribbonSpot.AddComponent<WrapSocket>();
         ribbonSocket.acceptRibbon = true;
 
-        // contururile: apar doar cat tii in mana obiectul potrivit
+        // outlines: shown only while holding the matching item
         GameObject paperHint = MakeOutlineRect("PaperHint", paperSpot.transform, SheetSize + 0.02f, SheetSize + 0.02f, outline);
         GameObject flowerHint = MakeOutlineRect("FlowerHint", stationObject.transform, 0.16f, 0.34f, outline);
-        // conul are ~9 cm raza unde se leaga panglica, deci inelul trebuie sa fie mai mare, ca sa se vada
+        // the cone is ~9 cm wide where the ribbon goes, so the ring must be bigger to be visible
         GameObject ribbonHint = MakeOutlineRing("RibbonHint", stationObject.transform, 0.1f, 24, outline);
         paperHint.SetActive(false);
         flowerHint.SetActive(false);
@@ -143,7 +143,7 @@ public static class WrappingSandboxBuilder
         station.flowerHint = flowerHint;
         station.ribbonHint = ribbonHint;
 
-        // ---------- dulapul si rafturile vechi din graybox nu mai sunt folosite (doar in sandbox) ----------
+        // ---------- old graybox cabinet and shelves are not used anymore (sandbox only) ----------
         string[] oldFurniture = { "WrappingPaperCounter", "RibbonsShelve1", "RibbonsShelve2" };
         for (int i = 0; i < oldFurniture.Length; i++)
         {
@@ -155,16 +155,16 @@ public static class WrappingSandboxBuilder
         BuildStatsBoard(shop.transform, gray);
         ArrangeTable();
 
-        // prefab-urile pe care le pune Irina in ver2_scene (ca si copii ai Shop)
+        // prefabs used in ver2_scene (as children of Shop)
         PrefabUtility.SaveAsPrefabAssetAndConnect(wall, PrefabsFolder + "/WrapWall.prefab", InteractionMode.AutomatedAction);
         PrefabUtility.SaveAsPrefabAssetAndConnect(table, PrefabsFolder + "/WrappingTable.prefab", InteractionMode.AutomatedAction);
 
         AssetDatabase.SaveAssets();
         EditorSceneManager.MarkSceneDirty(shop.scene);
-        Debug.Log("Wrapping sandbox gata. Salveaza scena (Ctrl+S).");
+        Debug.Log("Wrapping sandbox ready. Save the scene (Ctrl+S).");
     }
 
-    // Peretele de ambalare: o placa; sus 5 role de hartie, jos 2 bare cu cate 5 bobine de panglica.
+    // Wrapping wall: a board, 5 paper rolls on top, 2 bars with 5 ribbon spools each below.
     static GameObject BuildWrapWall(Transform shop, GameObject sheetPrefab, GameObject ribbonPrefab, Material gray, Material[] shades)
     {
         Bounds room = GameObject.Find("Room").GetComponent<Renderer>().bounds;
@@ -173,11 +173,11 @@ public static class WrappingSandboxBuilder
         wall.transform.position = new Vector3(0.55f, room.min.y, room.min.z);
 
         float rollLength = SheetSize;
-        float frontZ = 0.075f;    // cat de departe de perete stau rolele si bobinele
+        float frontZ = 0.075f;    // distance of rolls and spools from the wall
 
         MakeBox("Board", wall.transform, new Vector3(0f, 1.26f, 0.01f), new Vector3(0.6f, 1.34f, 0.02f), gray, false);
 
-        // rolele de hartie
+        // paper rolls
         for (int i = 0; i < paperNames.Length; i++)
         {
             Material paper = shades[i * 2];
@@ -187,18 +187,18 @@ public static class WrappingSandboxBuilder
 
             GameObject roll = MakeCylinder("RollVisual", row.transform, Vector3.zero, 0.07f, rollLength, paper);
 
-            // de aici iese hartia (partea din fata-jos a rolei)
+            // the paper comes out here (front bottom of the roll)
             GameObject pullOrigin = new GameObject("PullOrigin");
             pullOrigin.transform.SetParent(row.transform, false);
             pullOrigin.transform.localPosition = new Vector3(0f, -0.01f, 0.037f);
 
-            // hartia care atarna si se desfasoara
+            // hanging paper that unrolls
             GameObject pulled = new GameObject("PulledPaper");
             pulled.transform.SetParent(row.transform, false);
             pulled.transform.localPosition = pullOrigin.transform.localPosition;
             MakeBox("Paper", pulled.transform, new Vector3(0f, -0.05f, 0f), new Vector3(rollLength - 0.02f, 0.1f, 0.002f), paper, false);
 
-            // "manerul": marginea care atarna, de care apuci
+            // "handle": the hanging edge you grab
             GameObject handle = new GameObject("Handle");
             handle.transform.SetParent(row.transform, false);
             handle.transform.localPosition = new Vector3(0f, -0.065f, 0.04f);
@@ -215,7 +215,7 @@ public static class WrappingSandboxBuilder
             paperRoll.sheetLength = SheetSize;
         }
 
-        // panglicile: 2 bare de aceeasi lungime ca rolele, cate 5 bobine pe fiecare
+        // ribbons: 2 bars as long as the rolls, 5 spools each
         float[] barY = { 0.92f, 0.74f };
         for (int bar = 0; bar < 2; bar++)
         {
@@ -226,7 +226,7 @@ public static class WrappingSandboxBuilder
                 int c = bar * 5 + k;
                 GameObject spool = MakeCylinder("Spool_" + ribbonNames[c], wall.transform,
                     new Vector3(-rollLength / 2f + k * 0.1f, barY[bar], frontZ), 0.07f, 0.035f, shades[c]);
-                spool.AddComponent<BoxCollider>();   // ca sa poata fi apucata
+                spool.AddComponent<BoxCollider>();   // so it can be grabbed
                 spool.AddComponent<XRSimpleInteractable>();
                 WrapDispenser dispenser = spool.AddComponent<WrapDispenser>();
                 dispenser.itemPrefab = ribbonPrefab;
@@ -237,7 +237,7 @@ public static class WrappingSandboxBuilder
         return wall;
     }
 
-    // Panoul cu statisticile florariei: deocamdata doar o placa gri langa peretele de ambalare.
+    // Shop stats board: for now just a gray board next to the wrapping wall.
     static void BuildStatsBoard(Transform shop, Material gray)
     {
         Bounds room = GameObject.Find("Room").GetComponent<Renderer>().bounds;
@@ -245,7 +245,7 @@ public static class WrappingSandboxBuilder
         board.transform.position = new Vector3(-0.55f, room.min.y + 1.3f, room.min.z + 0.01f);
     }
 
-    // Aseaza masa de asamblare: locul pentru hartie, contururile, florile de test si foarfeca.
+    // Arranges the assembling counter: paper spot, outlines, test flowers and scissors.
     [MenuItem("Little Bloom/Arrange Wrapping Table")]
     public static void ArrangeTable()
     {
@@ -255,38 +255,38 @@ public static class WrappingSandboxBuilder
         GameObject counter = GameObject.Find("AssemblingCounter");
         if (bouquet == null || zone == null || station == null || counter == null)
         {
-            Debug.LogError("Lipsesc din scena: Bouquet, BouquetZone, WrappingStation sau AssemblingCounter.");
+            Debug.LogError("Missing in the scene: Bouquet, BouquetZone, WrappingStation or AssemblingCounter.");
             return;
         }
 
-        // statia de flori sta exact unde a pus-o Andreea in prefab
+        // the bouquet station stays where Andreea placed it in the prefab
         bouquet.transform.parent.localPosition = Vector3.zero;
 
-        // masa e rotita, de aceea luam marginile din bounds
+        // the table is rotated, so the edges come from bounds
         Bounds table = counter.GetComponent<Renderer>().bounds;
 
-        // hartia sta sub mijlocul conului
+        // paper sits under the middle of the cone
         Vector3 paperCenter = FindChild(bouquet.transform, "WrapCone").position;
         paperCenter.y = table.max.y + SheetThickness / 2f + 0.002f;
 
         station.paperSocket.transform.position = paperCenter;
-        // foaia se prinde de marginea dinspre tije si se intinde spre flori
+        // the sheet starts at the stem end and goes toward the flowers
         station.paperSocket.attachTransform.position = paperCenter + new Vector3(0f, 0f, -SheetSize / 2f);
         station.paperSocket.attachTransform.rotation = Quaternion.LookRotation(Vector3.up, Vector3.back);
         station.laidPaper.transform.position = paperCenter;
         station.flowerHint.transform.position = paperCenter + new Vector3(0f, 0.004f, 0f);
 
-        // panglica si inelul ei: in jurul tijelor, unde apare fundita
+        // ribbon spot and ring: around the stems, where the bow appears
         station.ribbonSocket.transform.position = station.ribbonBow.transform.position;
         station.ribbonHint.transform.position = station.ribbonBow.transform.position;
         station.ribbonHint.transform.rotation = bouquet.transform.rotation;
 
-        // florile de test: culcate, mai mici, in dreapta zonei buchetului
-        // (daca ar sta in zona, ar intra singure in buchet)
+        // test flowers: lying down, smaller, right of the bouquet zone
+        // (inside the zone they would join the bouquet by themselves)
         Bounds zoneBounds = zone.GetComponent<BoxCollider>().bounds;
         float flowerScale = 0.6f;
         float flowerLength = 0.66f * flowerScale;
-        float[] turns = { -5f, 4f, -2f, 6f };   // putin strambe, sa nu para aliniate cu rigla
+        float[] turns = { -5f, 4f, -2f, 6f };   // slightly turned so they don't look perfectly aligned
         for (int i = 0; i < 4; i++)
         {
             GameObject flower = GameObject.Find("TestFlower" + (i + 1));
@@ -296,7 +296,7 @@ public static class WrappingSandboxBuilder
             flower.transform.position = new Vector3(table.center.x + flowerLength / 2f, table.max.y + 0.02f, zoneBounds.max.z + 0.06f + i * 0.08f);
         }
 
-        // foarfeca in coltul liber din dreapta
+        // scissors in the free right corner
         GameObject scissors = GameObject.Find("Scissors");
         if (scissors != null)
         {
@@ -307,7 +307,7 @@ public static class WrappingSandboxBuilder
         EditorSceneManager.MarkSceneDirty(bouquet.gameObject.scene);
     }
 
-    // Sterge ce a pus builder-ul data trecuta.
+    // Removes what the builder added last time.
     static void RemoveOldSandbox()
     {
         string[] oldNames = { "WrappingTable", "WrappingStation", "PaperRack", "WrapWall", "ScoreBoard", "TestFlower1", "TestFlower2", "TestFlower3", "TestFlower4" };
@@ -324,7 +324,7 @@ public static class WrappingSandboxBuilder
         }
     }
 
-    // Un material gri cu luminozitatea data (0 = negru, 1 = alb). Daca exista deja, il refoloseste.
+    // Gray material with the given brightness (0 = black, 1 = white). Reused if it exists.
     static Material MakeShade(string name, float value, Material gray)
     {
         string path = "Assets/Materials/Wrapping/" + name + ".mat";
@@ -351,7 +351,7 @@ public static class WrappingSandboxBuilder
         return box;
     }
 
-    // Cilindru culcat (pe axa X): role, bare, bobine.
+    // Cylinder lying on the X axis: rolls, bars, spools.
     static GameObject MakeCylinder(string name, Transform parent, Vector3 localPosition, float diameter, float length, Material material)
     {
         GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -360,24 +360,24 @@ public static class WrappingSandboxBuilder
         cylinder.transform.SetParent(parent, false);
         cylinder.transform.localPosition = localPosition;
         cylinder.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
-        // cilindrul din Unity are inaltimea 2, deci scara pe Y e jumatate din lungime
+        // a Unity cylinder is 2 tall, so the Y scale is half the length
         cylinder.transform.localScale = new Vector3(diameter, length / 2f, diameter);
         cylinder.GetComponent<Renderer>().sharedMaterial = material;
         return cylinder;
     }
 
-    // O clapa a foii de pe masa: obiectul sta pe balama, hartia se intinde spre openDirection.
+    // One paper flap: the object sits on the hinge, the paper goes toward openDirection.
     static PaperFlap MakeFlap(string name, Transform parent, float hingeX, Vector3 openDirection, float width, Material paper, Material tabMaterial)
     {
         GameObject hinge = new GameObject(name);
         hinge.transform.SetParent(parent, false);
         hinge.transform.localPosition = new Vector3(hingeX, 0f, 0f);
 
-        // hartia clapei, cu un collider mai gros ca sa fie usor de apucat
+        // flap paper, with a thicker collider so it is easy to grab
         GameObject paperPiece = MakeBox("Paper", hinge.transform, openDirection * (width / 2f), new Vector3(width, SheetThickness, SheetSize), paper, true);
         paperPiece.GetComponent<BoxCollider>().size = new Vector3(1f, 6f, 1f);
 
-        // semnul de la margine: "de aici apuci"
+        // edge marker: "grab here"
         GameObject tab = MakeBox("Tab", hinge.transform, openDirection * (width - 0.012f) + new Vector3(0f, 0.003f, 0f),
             new Vector3(0.01f, 0.002f, SheetSize * 0.5f), tabMaterial, false);
 
@@ -387,12 +387,12 @@ public static class WrappingSandboxBuilder
         flap.tab = tab;
         flap.width = width;
         flap.length = SheetSize;
-        // cele 2 clape se intalnesc deasupra mijlocului: triunghi cu baza = mijlocul foii
+        // the 2 flaps meet above the middle: a triangle whose base is the middle
         flap.foldedAngle = 180f - Mathf.Acos(Mathf.Abs(hingeX) / width) * Mathf.Rad2Deg;
         return flap;
     }
 
-    // Contur dreptunghiular (4 fasii subtiri), culcat pe masa, fara umplutura.
+    // Rectangle outline (4 thin strips) lying on the table, no fill.
     static GameObject MakeOutlineRect(string name, Transform parent, float sizeX, float sizeZ, Material material)
     {
         GameObject outline = new GameObject(name);
@@ -405,7 +405,7 @@ public static class WrappingSandboxBuilder
         return outline;
     }
 
-    // Contur rotund (inel din bucati mici), in planul XZ al obiectului.
+    // Round outline (ring of small pieces) in the object's XZ plane.
     static GameObject MakeOutlineRing(string name, Transform parent, float radius, int pieces, Material material)
     {
         GameObject ring = new GameObject(name);
@@ -420,16 +420,16 @@ public static class WrappingSandboxBuilder
         return ring;
     }
 
-    // Foaia rupta de pe rola: o tii de margine si atarna sub mana.
+    // Sheet torn from the roll: held by its edge, hanging below the hand.
     static GameObject MakePaperSheetPrefab(Material material)
     {
         GameObject item = new GameObject("PaperSheet");
-        // originea e marginea de sus (cea dinspre rola); foaia coboara de acolo
+        // origin is the top edge (roll side); the sheet hangs down from it
         GameObject paper = MakeBox("Paper", item.transform, new Vector3(0f, -SheetSize / 2f, 0f), new Vector3(SheetSize, SheetSize, SheetThickness), material, true);
-        // se poate taia cu foarfeca Biancai (Cuttable sta pe obiectul cu collider)
+        // can be cut with the scissors (Cuttable is on the object with the collider)
         paper.AddComponent<Cuttable>().cutType = Cuttable.CutType.WrappingPaper;
 
-        // marginea de jos e cea pe care o tii in mana
+        // the bottom edge is the one you hold
         GameObject holdPoint = new GameObject("HoldPoint");
         holdPoint.transform.SetParent(item.transform, false);
         holdPoint.transform.localPosition = new Vector3(0f, -SheetSize, 0f);
@@ -437,9 +437,9 @@ public static class WrappingSandboxBuilder
 
         Rigidbody body = item.AddComponent<Rigidbody>();
         body.mass = 0.02f;
-        body.linearDamping = 4f;      // cade incet, ca o foaie
+        body.linearDamping = 4f;      // falls slowly, like paper
         body.angularDamping = 3f;
-        body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;   // foaia e subtire, sa nu treaca prin masa
+        body.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;   // thin sheet, so it does not pass through the table
 
         XRGrabInteractable grab = item.AddComponent<XRGrabInteractable>();
         grab.attachTransform = holdPoint.transform;
@@ -449,10 +449,10 @@ public static class WrappingSandboxBuilder
         return SavePrefab(item);
     }
 
-    // Bucata de panglica luata de pe bobina.
+    // Ribbon piece taken from a spool.
     static GameObject MakeRibbonPrefab(Material material)
     {
-        // lunga pe X, pentru ca foarfeca Biancai scurteaza panglica pe axa X
+        // long on X, because the scissors shorten the ribbon along X
         GameObject item = MakeBox("RibbonPiece", null, Vector3.zero, new Vector3(0.3f, 0.004f, 0.03f), material, true);
         item.AddComponent<Cuttable>().cutType = Cuttable.CutType.Ribbon;
         Rigidbody body = item.AddComponent<Rigidbody>();

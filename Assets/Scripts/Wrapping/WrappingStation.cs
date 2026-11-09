@@ -5,42 +5,42 @@ using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-// Statia de ambalare de pe masa de asamblare.
-// 1. Tragi o foaie de pe suportul cu role si o pui pe locul marcat de pe masa.
-// 2. Pui florile pe hartie (BouquetZone, partea de flori).
-// 3. Indoi cele 2 clape ale foii peste flori (stanga, dreapta).
-// 4. Iei o panglica si o duci la baza buchetului -> apare fundita.
-// 5. Buchetul e gata si poate fi ridicat.
-// Cand tii in mana hartie, o floare sau panglica, apare un contur alb acolo unde trebuie pusa.
+// Wrapping station on the assembling counter.
+// 1. Pull a sheet from a roll and put it on the marked spot.
+// 2. Put the flowers on the paper (BouquetZone).
+// 3. Fold the 2 flaps over the flowers (left, right).
+// 4. Bring a ribbon to the bouquet base -> a bow appears.
+// 5. The bouquet is done and can be picked up.
+// While you hold paper, a flower or a ribbon, a white outline shows where it goes.
 public class WrappingStation : MonoBehaviour
 {
-    [Header("Buchetul")]
+    [Header("Bouquet")]
     public Bouquet bouquet;
     public XRGrabInteractable bouquetGrab;
-    public bool lockBouquetUntilDone = true;   // buchetul nu poate fi luat de pe masa pana nu e legat
+    public bool lockBouquetUntilDone = true;   // the bouquet can't be picked up until it is tied
 
-    [Header("Hartia")]
-    public WrapSocket paperSocket;             // locul de pe masa unde pui foaia
-    public GameObject paperSpotMarker;         // conturul care arata unde se pune foaia (doar cat tii o foaie)
-    public GameObject laidPaper;               // foaia intinsa pe masa: mijloc + 2 clape
-    public Renderer[] laidPaperPieces;         // bucatile foii, ca sa le dam culoarea
-    public PaperFlap[] flaps;                  // clapele care se indoaie
+    [Header("Paper")]
+    public WrapSocket paperSocket;             // spot on the table for the paper
+    public GameObject paperSpotMarker;         // outline of the paper spot (only while holding paper)
+    public GameObject laidPaper;               // paper laid on the table: middle + 2 flaps
+    public Renderer[] laidPaperPieces;         // paper pieces, to apply the color
+    public PaperFlap[] flaps;                  // the folding flaps
 
-    [Header("Conul si panglica (din buchet)")]
+    [Header("Cone and ribbon (from the bouquet)")]
     public Renderer wrapCone;
     public GrowIn wrapConeGrow;
     public GameObject ribbonBow;
-    public WrapSocket ribbonSocket;            // locul de la baza buchetului unde duci panglica
+    public WrapSocket ribbonSocket;            // spot at the bouquet base for the ribbon
 
-    [Header("Contururi (apar doar cat tii obiectul potrivit)")]
-    public GameObject flowerHint;              // unde pui florile pe hartie
-    public GameObject ribbonHint;              // inelul de la baza buchetului
+    [Header("Outlines (shown only while holding the matching item)")]
+    public GameObject flowerHint;              // where the flowers go on the paper
+    public GameObject ribbonHint;              // ring at the bouquet base
 
-    [Header("Efecte (optional)")]
+    [Header("Effects (optional)")]
     public ParticleSystem puffEffect;
     public ParticleSystem doneEffect;
 
-    [Header("Ce a ales jucatorul")]
+    [Header("Player choices")]
     public string paperColor = "";
     public string ribbonColor = "";
 
@@ -49,7 +49,7 @@ public class WrappingStation : MonoBehaviour
     bool paperPlaced;
     int foldedFlaps;
 
-    // ce tine jucatorul in maini acum
+    // what the player holds right now
     bool holdingPaper;
     bool holdingRibbon;
     bool holdingFlower;
@@ -59,7 +59,7 @@ public class WrappingStation : MonoBehaviour
     {
         laidPaper.SetActive(false);
 
-        // conul nu se vede si nu se poate atinge pana nu e impachetat buchetul
+        // the cone is hidden and can't be touched until the bouquet is wrapped
         wrapCone.enabled = false;
         wrapConeCollider = wrapCone.GetComponent<Collider>();
         if (wrapConeCollider != null) wrapConeCollider.enabled = false;
@@ -84,21 +84,21 @@ public class WrappingStation : MonoBehaviour
 
     void Update()
     {
-        // clapele se pot indoi doar cand foaia e pe masa si are flori pe ea
+        // flaps can fold only when the paper is down and has flowers on it
         bool ready = laidPaper.activeSelf && bouquet.flowers.Count > 0 && !bouquet.isWrapped;
         for (int i = 0; i < flaps.Length; i++)
         {
             flaps[i].canFold = ready;
         }
 
-        // conturul apare doar cat tii in mana obiectul care merge acolo
+        // an outline shows only while holding the item that goes there
         CheckHands();
         if (paperSpotMarker != null) paperSpotMarker.SetActive(holdingPaper && !paperPlaced);
         if (flowerHint != null) flowerHint.SetActive(holdingFlower && !bouquet.isWrapped);
         if (ribbonHint != null) ribbonHint.SetActive(holdingRibbon && bouquet.isWrapped && !bouquet.isTied);
     }
 
-    // Se uita ce tine fiecare mana (socket-urile nu conteaza, ele nu sunt maini).
+    // Checks what each hand holds (sockets are skipped, they are not hands).
     void CheckHands()
     {
         holdingPaper = false;
@@ -125,7 +125,7 @@ public class WrappingStation : MonoBehaviour
         }
     }
 
-    // ---------- 1. foaia pusa pe masa ----------
+    // ---------- 1. paper placed on the table ----------
     void OnPaperPlaced(SelectEnterEventArgs args)
     {
         if (paperPlaced) return;
@@ -143,10 +143,10 @@ public class WrappingStation : MonoBehaviour
 
     IEnumerator LayPaper(GameObject sheet)
     {
-        // lasam foaia sa alunece lin pana se asaza pe masa
+        // let the sheet settle on the table
         yield return new WaitForSeconds(0.25f);
 
-        // apoi o inlocuim cu foaia de pe masa (aceeasi marime, acelasi loc, aceeasi culoare)
+        // then swap it for the laid paper (same size, place and color)
         paperSocket.socketActive = false;
         Destroy(sheet);
         if (paperSpotMarker != null) paperSpotMarker.SetActive(false);
@@ -161,8 +161,8 @@ public class WrappingStation : MonoBehaviour
         laidPaper.SetActive(true);
     }
 
-    // ---------- 2. clapele indoite ----------
-    // O apeleaza fiecare clapa (PaperFlap) cand s-a fixat.
+    // ---------- 2. flaps folded ----------
+    // Called by each PaperFlap when it stays folded.
     public void OnFlapFolded()
     {
         foldedFlaps++;
@@ -176,7 +176,7 @@ public class WrappingStation : MonoBehaviour
     {
         yield return new WaitForSeconds(0.3f);
 
-        // foaia indoita devine conul din jurul buchetului
+        // the folded paper becomes the cone around the bouquet
         laidPaper.SetActive(false);
 
         if (paperMaterial != null) wrapCone.sharedMaterial = paperMaterial;
@@ -188,11 +188,11 @@ public class WrappingStation : MonoBehaviour
         bouquet.isWrapped = true;
         bouquet.wrapColor = paperColor;
 
-        // acum se poate lega panglica
+        // now the ribbon can be tied
         ribbonSocket.gameObject.SetActive(true);
     }
 
-    // ---------- 3. panglica legata ----------
+    // ---------- 3. ribbon tied ----------
     void OnRibbonPlaced(SelectEnterEventArgs args)
     {
         if (!bouquet.isWrapped || bouquet.isTied) return;
@@ -219,12 +219,12 @@ public class WrappingStation : MonoBehaviour
         Destroy(piece);
         ribbonSocket.gameObject.SetActive(false);
 
-        ribbonBow.SetActive(true);   // GrowIn de pe fundita o face sa creasca
+        ribbonBow.SetActive(true);   // GrowIn on the bow makes it grow
         bouquet.isTied = true;
 
         if (doneEffect != null) doneEffect.Play();
 
-        // buchetul e gata, acum poate fi luat de pe masa
+        // the bouquet is done and can be picked up
         if (bouquetGrab != null) bouquetGrab.enabled = true;
     }
 }

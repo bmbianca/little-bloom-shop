@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Zona de pe masa de asamblare: o floare lăsată aici intră în buchet.
+// Area on the assembling counter: a flower dropped here joins the bouquet.
 [RequireComponent(typeof(BoxCollider))]
 public class BouquetZone : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public class BouquetZone : MonoBehaviour
         var flower = other.GetComponentInParent<FlowerItem>();
         if (flower == null) return;
 
-        // Doar dacă buchetul e încă pe masă, în zonă (nu a fost ridicat)
+        // Only while the bouquet is still on the table, inside the zone
         if (!zone.bounds.Contains(bouquet.transform.position)) return;
 
         bouquet.AddFlower(flower);

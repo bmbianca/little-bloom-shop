@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Datele unei flori.
+// Flower data.
 public class FlowerItem : MonoBehaviour
 {
     public string flowerName = "Rose";

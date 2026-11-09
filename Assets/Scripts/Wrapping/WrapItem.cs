@@ -1,8 +1,8 @@
 using UnityEngine;
 
-// O bucata de hartie sau de panglica luata de pe perete.
+// A piece of paper or ribbon taken from the wall.
 public class WrapItem : MonoBehaviour
 {
-    public bool isRibbon;          // false = hartie, true = panglica
+    public bool isRibbon;          // false = paper, true = ribbon
     public string colorName = "";
 }
