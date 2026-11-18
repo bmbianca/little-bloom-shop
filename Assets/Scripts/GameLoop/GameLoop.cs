@@ -31,6 +31,7 @@ public class GameLoop : MonoBehaviour
     [Header("Shop parts")]
     public WrappingStation station;
     public TextMeshPro notebookText;
+    public float notebookFontSize = 0.09f; // fixed size, so the text doesn't shrink when a hint shows up
     public Transform notebook;             // where the new-order sound plays
     public Bounds deliveryArea = new Bounds(Vector3.zero, Vector3.zero);   // box on the main desk where the bouquet is handed over (size 0 = anywhere)
     public ShopSign sign;
@@ -60,6 +61,12 @@ public class GameLoop : MonoBehaviour
     {
         usedOrders = new bool[orders.Count];
         state = State.Closed;
+
+        if (notebookText != null)
+        {
+            notebookText.enableAutoSizing = false;
+            notebookText.fontSize = notebookFontSize;
+        }
 
         if (sign != null) sign.SetOpen(false, true);
         if (dayCycle != null) dayCycle.SetNight(true);
@@ -303,9 +310,13 @@ public class GameLoop : MonoBehaviour
         if (notebookText != null) notebookText.text = page;
     }
 
-    // A small note under the current page (it goes away with the next page).
+    // A small note in place of the last line of the page (it goes away with the next page).
+    // Replacing the line instead of adding one keeps the page the same length.
     void ShowHint(string hint)
     {
-        if (notebookText != null) notebookText.text = notebookPage + "\n\n<color=#777777><i>" + hint + "</i></color>";
+        if (notebookText == null) return;
+        int lastLine = notebookPage.LastIndexOf('\n');
+        string top = lastLine >= 0 ? notebookPage.Substring(0, lastLine + 1) : "";
+        notebookText.text = top + "<color=#777777><i>" + hint + "</i></color>";
     }
 }
