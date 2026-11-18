@@ -48,6 +48,8 @@ public class WrappingStation : MonoBehaviour
     Collider wrapConeCollider;
     bool paperPlaced;
     int foldedFlaps;
+    Vector3 bouquetStartPosition;
+    Quaternion bouquetStartRotation;
 
     // what the player holds right now
     bool holdingPaper;
@@ -57,6 +59,9 @@ public class WrappingStation : MonoBehaviour
 
     void Start()
     {
+        bouquetStartPosition = bouquet.transform.position;
+        bouquetStartRotation = bouquet.transform.rotation;
+
         laidPaper.SetActive(false);
 
         // the cone is hidden and can't be touched until the bouquet is wrapped
@@ -190,6 +195,61 @@ public class WrappingStation : MonoBehaviour
 
         // now the ribbon can be tied
         ribbonSocket.gameObject.SetActive(true);
+    }
+
+    // ---------- reset for the next order ----------
+    // Called by the GameLoop after the bouquet is delivered (and at the end of the day).
+    // The customer "takes" the bouquet: its flowers are removed and the station starts again.
+    public void ResetStation()
+    {
+        StopAllCoroutines();
+
+        // let go of the bouquet if a hand still holds it
+        if (bouquetGrab != null && bouquetGrab.isSelected && bouquetGrab.interactionManager != null)
+        {
+            bouquetGrab.interactionManager.CancelInteractableSelection((IXRSelectInteractable)bouquetGrab);
+        }
+
+        // empty bouquet back on the table
+        for (int i = 0; i < bouquet.flowers.Count; i++)
+        {
+            if (bouquet.flowers[i] != null) Destroy(bouquet.flowers[i].gameObject);
+        }
+        bouquet.flowers.Clear();
+        bouquet.isWrapped = false;
+        bouquet.isTied = false;
+        bouquet.wrapColor = "";
+
+        bouquet.transform.SetPositionAndRotation(bouquetStartPosition, bouquetStartRotation);
+        Rigidbody bouquetBody = bouquet.GetComponent<Rigidbody>();
+        if (bouquetBody != null && !bouquetBody.isKinematic)
+        {
+            bouquetBody.linearVelocity = Vector3.zero;
+            bouquetBody.angularVelocity = Vector3.zero;
+        }
+
+        // cone and bow hidden again
+        wrapCone.enabled = false;
+        if (wrapConeCollider != null) wrapConeCollider.enabled = false;
+        ribbonBow.SetActive(false);
+        ribbonSocket.socketActive = true;
+        ribbonSocket.gameObject.SetActive(false);
+
+        // paper spot free again
+        laidPaper.SetActive(false);
+        paperPlaced = false;
+        foldedFlaps = 0;
+        paperSocket.socketActive = true;
+        for (int i = 0; i < flaps.Length; i++)
+        {
+            flaps[i].ResetFlap();
+        }
+
+        paperColor = "";
+        ribbonColor = "";
+        paperMaterial = null;
+
+        if (lockBouquetUntilDone && bouquetGrab != null) bouquetGrab.enabled = false;
     }
 
     // ---------- 3. ribbon tied ----------
