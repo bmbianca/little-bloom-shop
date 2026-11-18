@@ -27,18 +27,15 @@ public class Bouquet : MonoBehaviour
         if (isWrapped) return false;   // no new flowers once the paper is wrapped
 
         var grab = flower.GetComponent<XRGrabInteractable>();
-        if (grab != null)
-        {
-            if (grab.isSelected) return false;   // still held in a hand
-            grab.enabled = false;                // can't be grabbed on its own anymore
-        }
+        if (grab != null && grab.isSelected) return false;
+
+        var rest = flower.GetComponent<FlowerRest>();
+        if (rest != null) Destroy(rest);
+
+        if (grab != null) Destroy(grab);
 
         var rb = flower.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-            rb.detectCollisions = false;
-        }
+        if (rb != null) Destroy(rb);
 
         foreach (var c in flower.GetComponentsInChildren<Collider>())
             c.enabled = false;
