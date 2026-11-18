@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 32273bef892efa244b35718bed0f361d, type: 2}
+  - {fileID: 2100000, guid: 945352c41ffd7f64c81b93dba8f96c58, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -159,7 +159,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 595f2df4131b9d34a84b8bcdfcb98e8e, type: 2}
+  - {fileID: 2100000, guid: c11b4976e0fe1e54693443c91b37b387, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: 595f2df4131b9d34a84b8bcdfcb98e8e, type: 2}
+  itemMaterial: {fileID: 2100000, guid: c11b4976e0fe1e54693443c91b37b387, type: 2}
   colorName: Burgundy
 --- !u!1 &136301677733770253
 GameObject:
@@ -425,7 +425,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3975cd7bf4d247e42b1ec8f2e196f64e, type: 2}
+  - {fileID: 2100000, guid: 6679a50fded149f4b8e75e8d4a07227f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -605,7 +605,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 676b6363078d51d4598afb752d7e0eae, type: 2}
+  - {fileID: 2100000, guid: f89ecb83d43ddec4894037221bccc7e3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -698,7 +698,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6d988246998ce2c48a4ce6185e3005f4, type: 2}
+  - {fileID: 2100000, guid: 00651627c73c46148ab6d92ade1c2fab, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -830,7 +830,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: 6d988246998ce2c48a4ce6185e3005f4, type: 2}
+  itemMaterial: {fileID: 2100000, guid: 00651627c73c46148ab6d92ade1c2fab, type: 2}
   colorName: Gold
 --- !u!1 &1334916523620809619
 GameObject:
@@ -898,7 +898,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6d988246998ce2c48a4ce6185e3005f4, type: 2}
+  - {fileID: 2100000, guid: 63658b144230a2e4da25b43cab808b38, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -991,7 +991,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 32273bef892efa244b35718bed0f361d, type: 2}
+  - {fileID: 2100000, guid: dba4b3fa62692db4590f4d7df44fbd94, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1123,7 +1123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: 32273bef892efa244b35718bed0f361d, type: 2}
+  itemMaterial: {fileID: 2100000, guid: dba4b3fa62692db4590f4d7df44fbd94, type: 2}
   colorName: Blue
 --- !u!1 &1498205371416103506
 GameObject:
@@ -1267,7 +1267,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PaperRoll
   sheetPrefab: {fileID: 297546131879621371, guid: 54206a84dc36a25439a35e325d1c097c, type: 3}
-  paperMaterial: {fileID: 2100000, guid: 3975cd7bf4d247e42b1ec8f2e196f64e, type: 2}
+  paperMaterial: {fileID: 2100000, guid: 6679a50fded149f4b8e75e8d4a07227f, type: 2}
   colorName: Mint
   pullOrigin: {fileID: 6038841192885083255}
   pulledPaper: {fileID: 2459454349390988900}
@@ -1494,7 +1494,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 676b6363078d51d4598afb752d7e0eae, type: 2}
+  - {fileID: 2100000, guid: 282db497e44d7b44bbac780f4d959b04, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1626,7 +1626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: 676b6363078d51d4598afb752d7e0eae, type: 2}
+  itemMaterial: {fileID: 2100000, guid: 282db497e44d7b44bbac780f4d959b04, type: 2}
   colorName: Green
 --- !u!1 &2902674372728153598
 GameObject:
@@ -1694,7 +1694,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 676b6363078d51d4598afb752d7e0eae, type: 2}
+  - {fileID: 2100000, guid: f89ecb83d43ddec4894037221bccc7e3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1860,7 +1860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PaperRoll
   sheetPrefab: {fileID: 297546131879621371, guid: 54206a84dc36a25439a35e325d1c097c, type: 3}
-  paperMaterial: {fileID: 2100000, guid: 32273bef892efa244b35718bed0f361d, type: 2}
+  paperMaterial: {fileID: 2100000, guid: 945352c41ffd7f64c81b93dba8f96c58, type: 2}
   colorName: Lilac
   pullOrigin: {fileID: 1225174602325623413}
   pulledPaper: {fileID: 5598289065221213527}
@@ -1934,7 +1934,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb786d40e09df4046a39fffabb9ead02, type: 2}
+  - {fileID: 2100000, guid: 7aed6e7a1d328a54fa625bafc25379b5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2132,7 +2132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PaperRoll
   sheetPrefab: {fileID: 297546131879621371, guid: 54206a84dc36a25439a35e325d1c097c, type: 3}
-  paperMaterial: {fileID: 2100000, guid: 676b6363078d51d4598afb752d7e0eae, type: 2}
+  paperMaterial: {fileID: 2100000, guid: f89ecb83d43ddec4894037221bccc7e3, type: 2}
   colorName: White
   pullOrigin: {fileID: 7171367789877091503}
   pulledPaper: {fileID: 7318469812109704637}
@@ -2209,7 +2209,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e9f30221899f8f34cb8aae0d2ca54cfb, type: 2}
+  - {fileID: 2100000, guid: 4e2c3fc0acfee284291b82369689fab6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2341,7 +2341,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: e9f30221899f8f34cb8aae0d2ca54cfb, type: 2}
+  itemMaterial: {fileID: 2100000, guid: 4e2c3fc0acfee284291b82369689fab6, type: 2}
   colorName: Pink
 --- !u!1 &3685685253362908235
 GameObject:
@@ -2444,7 +2444,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb786d40e09df4046a39fffabb9ead02, type: 2}
+  - {fileID: 2100000, guid: 0da89ba4e9346664aad548aba50a30d1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2576,7 +2576,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: bb786d40e09df4046a39fffabb9ead02, type: 2}
+  itemMaterial: {fileID: 2100000, guid: 0da89ba4e9346664aad548aba50a30d1, type: 2}
   colorName: Red
 --- !u!1 &4234278262584979286
 GameObject:
@@ -2737,7 +2737,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 95ebd283a0a80004d85037d24a66016a, type: 2}
+  - {fileID: 2100000, guid: b702648a48016134c9e5decd8280b3d3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2869,7 +2869,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: 95ebd283a0a80004d85037d24a66016a, type: 2}
+  itemMaterial: {fileID: 2100000, guid: b702648a48016134c9e5decd8280b3d3, type: 2}
   colorName: Peach
 --- !u!1 &4823743219835360544
 GameObject:
@@ -2972,7 +2972,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6d988246998ce2c48a4ce6185e3005f4, type: 2}
+  - {fileID: 2100000, guid: 63658b144230a2e4da25b43cab808b38, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3389,7 +3389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PaperRoll
   sheetPrefab: {fileID: 297546131879621371, guid: 54206a84dc36a25439a35e325d1c097c, type: 3}
-  paperMaterial: {fileID: 2100000, guid: 6d988246998ce2c48a4ce6185e3005f4, type: 2}
+  paperMaterial: {fileID: 2100000, guid: 63658b144230a2e4da25b43cab808b38, type: 2}
   colorName: Kraft
   pullOrigin: {fileID: 8017645662707392953}
   pulledPaper: {fileID: 8855172862658719681}
@@ -3466,7 +3466,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e9f82bc80f4df414aa744e1787cce001, type: 2}
+  - {fileID: 2100000, guid: 9f20f0ab2ec092c4692eac8625e39d1b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3598,7 +3598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: e9f82bc80f4df414aa744e1787cce001, type: 2}
+  itemMaterial: {fileID: 2100000, guid: 9f20f0ab2ec092c4692eac8625e39d1b, type: 2}
   colorName: Lilac
 --- !u!1 &7732112921953653336
 GameObject:
@@ -3669,7 +3669,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cfce9c57c4df0714185ee203afe008fe, type: 2}
+  - {fileID: 2100000, guid: ca5b5049967bee248b59cd238eb710b4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3801,7 +3801,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: cfce9c57c4df0714185ee203afe008fe, type: 2}
+  itemMaterial: {fileID: 2100000, guid: ca5b5049967bee248b59cd238eb710b4, type: 2}
   colorName: White
 --- !u!1 &8087092671191003837
 GameObject:
@@ -3900,7 +3900,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 32273bef892efa244b35718bed0f361d, type: 2}
+  - {fileID: 2100000, guid: 945352c41ffd7f64c81b93dba8f96c58, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4066,7 +4066,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PaperRoll
   sheetPrefab: {fileID: 297546131879621371, guid: 54206a84dc36a25439a35e325d1c097c, type: 3}
-  paperMaterial: {fileID: 2100000, guid: bb786d40e09df4046a39fffabb9ead02, type: 2}
+  paperMaterial: {fileID: 2100000, guid: 7aed6e7a1d328a54fa625bafc25379b5, type: 2}
   colorName: Pink
   pullOrigin: {fileID: 5677420642856920496}
   pulledPaper: {fileID: 5133432222183991642}
@@ -4140,7 +4140,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bb786d40e09df4046a39fffabb9ead02, type: 2}
+  - {fileID: 2100000, guid: 7aed6e7a1d328a54fa625bafc25379b5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4265,7 +4265,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3975cd7bf4d247e42b1ec8f2e196f64e, type: 2}
+  - {fileID: 2100000, guid: 061cf5f656709c9439fe0217904688c3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4397,7 +4397,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WrapDispenser
   itemPrefab: {fileID: 7109981153137204110, guid: e3cbc134d4371d34b9d3854ea542cd61, type: 3}
-  itemMaterial: {fileID: 2100000, guid: 3975cd7bf4d247e42b1ec8f2e196f64e, type: 2}
+  itemMaterial: {fileID: 2100000, guid: 061cf5f656709c9439fe0217904688c3, type: 2}
   colorName: Silver
 --- !u!1 &9198907674105678410
 GameObject:
@@ -4465,7 +4465,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3975cd7bf4d247e42b1ec8f2e196f64e, type: 2}
+  - {fileID: 2100000, guid: 6679a50fded149f4b8e75e8d4a07227f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

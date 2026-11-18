@@ -180,7 +180,7 @@ public static class WrappingSandboxBuilder
         // paper rolls
         for (int i = 0; i < paperNames.Length; i++)
         {
-            Material paper = shades[i * 2];
+            Material paper = Colored("Paper_" + paperNames[i], shades[i * 2]);
             GameObject row = new GameObject("Roll_" + paperNames[i]);
             row.transform.SetParent(wall.transform, false);
             row.transform.localPosition = new Vector3(0f, 1.8f - i * 0.17f, frontZ);
@@ -224,13 +224,14 @@ public static class WrappingSandboxBuilder
             for (int k = 0; k < 5; k++)
             {
                 int c = bar * 5 + k;
+                Material ribbon = Colored("Ribbon_" + ribbonNames[c], shades[c]);
                 GameObject spool = MakeCylinder("Spool_" + ribbonNames[c], wall.transform,
-                    new Vector3(-rollLength / 2f + k * 0.1f, barY[bar], frontZ), 0.07f, 0.035f, shades[c]);
+                    new Vector3(-rollLength / 2f + k * 0.1f, barY[bar], frontZ), 0.07f, 0.035f, ribbon);
                 spool.AddComponent<BoxCollider>();   // so it can be grabbed
                 spool.AddComponent<XRSimpleInteractable>();
                 WrapDispenser dispenser = spool.AddComponent<WrapDispenser>();
                 dispenser.itemPrefab = ribbonPrefab;
-                dispenser.itemMaterial = shades[c];
+                dispenser.itemMaterial = ribbon;
                 dispenser.colorName = ribbonNames[c];
             }
         }
@@ -322,6 +323,13 @@ public static class WrappingSandboxBuilder
         {
             Object.DestroyImmediate(oldBouquet.transform.parent.gameObject);
         }
+    }
+
+    // The colored paper/ribbon material (Assets/Materials/Wrapping), or the gray one if it doesn't exist.
+    static Material Colored(string name, Material fallback)
+    {
+        Material material = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Wrapping/" + name + ".mat");
+        return material != null ? material : fallback;
     }
 
     // Gray material with the given brightness (0 = black, 1 = white). Reused if it exists.
