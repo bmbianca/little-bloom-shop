@@ -161,6 +161,18 @@ public class PaperFlap : MonoBehaviour
         }
     }
 
+    // Back to flat and ready to fold again (for the next bouquet).
+    public void ResetFlap()
+    {
+        StopAllCoroutines();
+        hand = null;
+        angle = 0f;
+        ApplyAngle();
+        isFolded = false;
+        canFold = false;
+        handle.enabled = true;
+    }
+
     void ApplyAngle()
     {
         transform.rotation = Quaternion.AngleAxis(angle, axis) * openRotation;
