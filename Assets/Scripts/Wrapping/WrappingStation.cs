@@ -50,6 +50,8 @@ public class WrappingStation : MonoBehaviour
     int foldedFlaps;
     Vector3 bouquetStartPosition;
     Quaternion bouquetStartRotation;
+    RigidbodyConstraints bouquetStartConstraints;   // frozen on the table (FlowerRest), until it is picked up
+    bool bouquetStartKinematic;
 
     // what the player holds right now
     bool holdingPaper;
@@ -61,6 +63,12 @@ public class WrappingStation : MonoBehaviour
     {
         bouquetStartPosition = bouquet.transform.position;
         bouquetStartRotation = bouquet.transform.rotation;
+        Rigidbody startBody = bouquet.GetComponent<Rigidbody>();
+        if (startBody != null)
+        {
+            bouquetStartConstraints = startBody.constraints;
+            bouquetStartKinematic = startBody.isKinematic;
+        }
 
         laidPaper.SetActive(false);
 
@@ -184,6 +192,9 @@ public class WrappingStation : MonoBehaviour
         // the folded paper becomes the cone around the bouquet
         laidPaper.SetActive(false);
 
+        // the flowers that lay flat on the paper go into the cone
+        bouquet.ArrangeInCone();
+
         if (paperMaterial != null) wrapCone.sharedMaterial = paperMaterial;
         wrapCone.enabled = true;
         if (wrapConeCollider != null) wrapConeCollider.enabled = true;
@@ -220,12 +231,22 @@ public class WrappingStation : MonoBehaviour
         bouquet.isTied = false;
         bouquet.wrapColor = "";
 
+        // back on the table exactly as at the start: same place, frozen again.
+        // (Picking it up unfreezes it, and with the cone switched off it has no collider,
+        // so without this it would fall through the table and the next order would break.)
         bouquet.transform.SetPositionAndRotation(bouquetStartPosition, bouquetStartRotation);
         Rigidbody bouquetBody = bouquet.GetComponent<Rigidbody>();
-        if (bouquetBody != null && !bouquetBody.isKinematic)
+        if (bouquetBody != null)
         {
-            bouquetBody.linearVelocity = Vector3.zero;
-            bouquetBody.angularVelocity = Vector3.zero;
+            if (!bouquetBody.isKinematic)
+            {
+                bouquetBody.linearVelocity = Vector3.zero;
+                bouquetBody.angularVelocity = Vector3.zero;
+            }
+            bouquetBody.isKinematic = bouquetStartKinematic;
+            bouquetBody.constraints = bouquetStartConstraints;
+            bouquetBody.position = bouquetStartPosition;
+            bouquetBody.rotation = bouquetStartRotation;
         }
 
         // cone and bow hidden again
