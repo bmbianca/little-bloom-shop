@@ -29,6 +29,10 @@ public class FlowerStock : MonoBehaviour
         {
             GameObject original = flowers[i].gameObject;
 
+            // only real flowers: the bouquet on the wrapping table also has FlowerRest (to stay still),
+            // and a copy of it would appear on the table as a gray cone
+            if (original.GetComponent<FlowerItem>() == null) continue;
+
             Slot slot = new Slot();
             slot.parent = original.transform.parent;
             slot.localPosition = original.transform.localPosition;
