@@ -119,13 +119,23 @@ public class GameLoop : MonoBehaviour
             ShowHint("Put the bouquet down on the desk, then ring the bell.");
             return;
         }
-        if (deliveryArea.size != Vector3.zero && !deliveryArea.Contains(bouquet.transform.position))
+        if (!BouquetOnDesk(bouquet))
         {
             ShowHint("Bring the bouquet to this desk, next to the bell.");
             return;
         }
 
         Deliver(bouquet);
+    }
+
+    // Is the bouquet on the main desk? Its base point alone is not enough: lying on the desk,
+    // the base can end up just under the bottom of the box (the box also counts the bell and the book).
+    // So the whole wrapped cone is checked: it only has to touch the box.
+    bool BouquetOnDesk(Bouquet bouquet)
+    {
+        if (deliveryArea.size == Vector3.zero) return true;
+        if (deliveryArea.Contains(bouquet.transform.position)) return true;
+        return station.wrapCone != null && deliveryArea.Intersects(station.wrapCone.bounds);
     }
 
     // ================= day =================
