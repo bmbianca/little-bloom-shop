@@ -20,6 +20,10 @@ public class Cuttable : MonoBehaviour
     [Header("Stem settings")]
     [Tooltip("Minimum length in meters that must stay on top")]
     public float minLength = 0.03f;
+    [Tooltip("Thickness in meters of the piece that falls off. 0 = use the width of the stem mesh")]
+    public float scrapThickness = 0f;
+    [Tooltip("Parts that disappear when the stem is cut (e.g. the leaves at the bottom of the stem)")]
+    public GameObject[] removeOnCut;
 
     private bool isAlreadyScrap = false;
 
@@ -74,6 +78,15 @@ public class Cuttable : MonoBehaviour
         // Real length in meters of the part that stays
         float remainingMeters = newScaleY * meshHeight;
         if (remainingMeters < minLength) return;
+
+        // the cut happens: parts listed in removeOnCut disappear
+        if (removeOnCut != null)
+        {
+            foreach (GameObject part in removeOnCut)
+            {
+                if (part != null) Destroy(part);
+            }
+        }
 
         // Stem ends in world space, before the cut
         Vector3 worldTop = transform.TransformPoint(new Vector3(0, localTopY, 0));
@@ -135,6 +148,7 @@ public class Cuttable : MonoBehaviour
         // Real stem thickness (a Unity cylinder is 1 wide, the stem mesh can be thinner)
         float width = meshBounds.size.x * transform.lossyScale.x;
         float depth = meshBounds.size.z * transform.lossyScale.z;
+        if (scrapThickness > 0f) { width = scrapThickness; depth = scrapThickness; }
         scrap.transform.localScale = new Vector3(width, scrapLengthMeters * 0.5f, depth);
 
         ReplaceWithGrabBoxCollider(scrap, new Vector3(2.5f, 1.5f, 2.5f));
